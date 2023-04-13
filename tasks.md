@@ -1,16 +1,22 @@
 Tasks
-- [ ] Write a minimal GPU-friendly graph library
-   - [ ] Implement adjacency lists
+
+Aayush
+- [ ] Write a minimal GPU-friendly graph library (use classes not structs)
+   - [ ] Implement adjacency matrices (linearized representation)
    - [ ] Implement a structure to represent a path
    - [ ] Auxiliary graph operations (get neighbors, calc path weight, etc...)
+   - [ ] Write dataloader for TSP dataset(s)
+
+Matt
 - [ ] Implement generic ACO algorithm
 - [ ] Implement ACO for TSP on the CPU, sequentially
-- [ ] Implement ACO for TSP on the GPU, sequentially (should we even do this?)
+
+Finish by Sunday night
+
+Later:
 - [ ] Implement ACO for TSP on the GPU, using parallelism
 - [ ] Benchmark
-   - [ ] Write dataloader for TSP dataset(s)
    - [ ] Benchmark the CPU impl
-   - [ ] Benchmark the sequential GPU impl
    - [ ] Benchmark the real GPU impl
 - [ ] Compare correctness (how are we going to do this?)
 
