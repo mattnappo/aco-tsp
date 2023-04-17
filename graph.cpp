@@ -79,7 +79,7 @@ void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_mat
             float y1 = read_2D(node_list, i, 1, 2);
             float x2 = read_2D(node_list, j, 0, 2);
             float y2 = read_2D(node_list, j, 1, 2);
-            float distance = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+            float distance = 1.0f/sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
             write_2D(adjacency_matrix, i, j, num_nodes, distance);
             write_2D(adjacency_matrix, j, i, num_nodes, distance);
         }
@@ -101,19 +101,44 @@ void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighb
 }
 
 // get unvisited neighbors of a node
-void get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited)
+int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited)
 {
     // get the unvisited neighbors of a node
     // the unvisited neighbors of a node are the nodes that are connected to it by an edge and have not been visited yet
     // the unvisited neighbors of a node are stored in the neighbors array
+    // if there are no unvisited neighbors, return -1. Otherwise, return the number of unvisited neighbors
 
+    int num_unvisited_neighbors = 0;
     for (int i = 0; i < num_nodes; i++)
     {
-        if (visited[i] == false)
+        if (read_2D(adjacency_matrix, node, i, num_nodes) > 0 && !visited[i])
         {
-            neighbors[i] = read_2D(adjacency_matrix, node, i, num_nodes);
+            neighbors[num_unvisited_neighbors] = i;
+            num_unvisited_neighbors++;
         }
     }
+    if (num_unvisited_neighbors == 0)
+    {
+        return -1;
+    }
+    else
+    {
+        return num_unvisited_neighbors;
+    }
+}
+
+float path_length(int num_nodes, float *adjacency_matrix, int *path)
+{
+    // calculate the length of a path
+    // the length of a path is the sum of the distances between the nodes in the path
+
+    float length = 0.0f;
+    for (int i = 0; i < num_nodes - 1; i++)
+    {
+        length += read_2D(adjacency_matrix, path[i], path[i + 1], num_nodes);
+    }
+    length += read_2D(adjacency_matrix, path[num_nodes - 1], path[0], num_nodes);
+    return length;
 }
 
 // print the node list

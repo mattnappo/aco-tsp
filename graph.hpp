@@ -29,4 +29,6 @@ void print_adjacency_matrix(int num_nodes, float *adjacency_matrix);
 void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
 int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
 
+float path_length(int num_nodes, float *adjacency_matrix, int *path);
+
 #endif
