@@ -10,6 +10,8 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include <string>
+
 // nodes are represented by the x and y coordinates of the cities
 // all edges are undirected with weight equal to the distance between the two cities
 // the graph is represented by an adjacency matrix
