@@ -4,4 +4,4 @@
 *.ptx
 *.cubin
 *.fatbin
-*.tsp
+data/*
