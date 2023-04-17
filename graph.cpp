@@ -87,6 +87,35 @@ void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_mat
 
 }
 
+// get the neighbors of a node
+void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors)
+{
+    // get the neighbors of a node
+    // the neighbors of a node are the nodes that are connected to it by an edge
+    // the neighbors of a node are stored in the neighbors array
+
+    for (int i = 0; i < num_nodes; i++)
+    {
+        neighbors[i] = read_2D(adjacency_matrix, node, i, num_nodes);
+    }
+}
+
+// get unvisited neighbors of a node
+void get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited)
+{
+    // get the unvisited neighbors of a node
+    // the unvisited neighbors of a node are the nodes that are connected to it by an edge and have not been visited yet
+    // the unvisited neighbors of a node are stored in the neighbors array
+
+    for (int i = 0; i < num_nodes; i++)
+    {
+        if (visited[i] == false)
+        {
+            neighbors[i] = read_2D(adjacency_matrix, node, i, num_nodes);
+        }
+    }
+}
+
 // print the node list
 void print_node_list(int num_nodes, float *node_list)
 {

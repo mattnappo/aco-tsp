@@ -2,8 +2,8 @@ Tasks
 
 Aayush
 - [ ] Write a minimal GPU-friendly graph library (use classes not structs)
-   - [ ] Implement adjacency matrices (linearized representation)
-   - [ ] Implement a structure to represent a path
+   - [x] Implement adjacency matrices (linearized representation)
+   - [x] Implement a structure to represent a path
    - [ ] Auxiliary graph operations (get neighbors, calc path weight, etc...)
    - [ ] Write dataloader for TSP dataset(s)
 
