@@ -3,9 +3,15 @@
 
 // The output of an iteration
 typedef struct ITER_T {
-    float *x_best; // Best path seen so far
-    float  y_best; // Associated path length
+    int *path;    // Best path seen so far
+    float length; // Associated path length
 } iter_t;
+
+// Sample an integer in the range [0,k) according to k weights
+int sample(int k, float *weights);
+
+// Sum an array of n floats
+float sum_array(int n, float *values);
 
 // Compute the edge attractiveness matrix given the graph, tau, eta, a, and b.
 // Store the output in `float *A`
