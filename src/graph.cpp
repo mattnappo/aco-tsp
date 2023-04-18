@@ -127,7 +127,7 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     }
 }
 
-float path_length(int num_nodes, float *adjacency_matrix, int *path)
+float calc_path_length(int num_nodes, float *adjacency_matrix, int *path)
 {
     // calculate the length of a path
     // the length of a path is the sum of the distances between the nodes in the path
@@ -137,7 +137,7 @@ float path_length(int num_nodes, float *adjacency_matrix, int *path)
     {
         length += read_2D(adjacency_matrix, path[i], path[i + 1], num_nodes);
     }
-    length += read_2D(adjacency_matrix, path[num_nodes - 1], path[0], num_nodes);
+    //length += read_2D(adjacency_matrix, path[num_nodes - 1], path[0], num_nodes); // I dont think we need this
     return length;
 }
 
@@ -165,6 +165,13 @@ void print_adjacency_matrix(int num_nodes, float *adjacency_matrix)
     }
 }
 
-
-
-
+void display_adjacency_matrix(int num_nodes, float *adjacency_matrix)
+{
+    for (int i = 0; i < num_nodes; i++) {
+        for (int j = 0; j < num_nodes; j++) {
+            float v = read_2D(adjacency_matrix, i, j, num_nodes);
+            printf("%8.2f ", v);
+        }
+        std::cout << std::endl;
+    }
+}

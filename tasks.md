@@ -10,6 +10,7 @@ Aayush
 Matt
 - [ ] Implement generic ACO algorithm
 - [ ] Implement ACO for TSP on the CPU, sequentially
+- [ ] Write tests
 
 Finish by Sunday night
 
@@ -19,4 +20,4 @@ Later:
    - [ ] Benchmark the CPU impl
    - [ ] Benchmark the real GPU impl
 - [ ] Compare correctness (how are we going to do this?)
-
+- [ ] Search the project for `TODO` since I added some potential stuff

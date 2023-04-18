@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "graph.hpp"
+#include "aco.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -29,4 +30,11 @@ int main(int argc, char *argv[])
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
+    // Run ACO tests
+    int   m = 100; // num ants
+    int   k = 100; // num iter
+    float a = 1.0; // alpha
+    float b = 5.0; // beta
+    float p = 0.5; // rho
+    run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
 }

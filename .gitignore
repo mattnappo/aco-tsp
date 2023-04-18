@@ -1,3 +1,4 @@
+*.o
 *.i
 *.ii
 *.gpu
@@ -5,3 +6,7 @@
 *.cubin
 *.fatbin
 data/*
+!data/ts10.tsp
+sample_test.txt
+final
+tests

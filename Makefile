@@ -3,25 +3,28 @@
 # the main program remains in the current directory
 
 # the compiler
-CC = g++
+CC := g++
 
 # the compiler flags
-CFLAGS = -Wall -g -Iinclude
+CFLAGS := -Wall -g -Iinclude
 
 # source files in src/ directory
-SRC = $(wildcard src/*.cpp)
+SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
 
 # object files in obj/ directory
-OBJ = $(patsubst src/%.cpp,obj/%.o,$(SRC))
+OBJ := $(patsubst src/%.cpp,obj/%.o,$(SRC))
 
 # the executable file
-TARGET = final
+TARGET := final
 
 # the default target
 all: $(TARGET)
 
 # the executable file depends on the object files
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) src/main.cpp
+	$(CC) $(CFLAGS) -o $@ $^
+
+tests: $(OBJ) src/tests.cpp
 	$(CC) $(CFLAGS) -o $@ $^
 
 # the object files depend on the source files
@@ -30,7 +33,7 @@ obj/%.o: src/%.cpp
 
 # the clean target
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) $(TARGET) tests sample_test.txt
 
 # the run target
 run: $(TARGET)

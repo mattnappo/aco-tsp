@@ -1,5 +1,6 @@
 #include <cstring>
 #include <cmath>
+#include <limits>
 
 #include "aco.hpp"
 #include "graph.hpp"
@@ -60,7 +61,7 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     memset(path, 0, num_nodes);
 
     bool visited[num_nodes];
-    memset(visited, false, num_nodes);
+    memset(visited, 0, num_nodes);
 
     // Try to visit every node
     while (path_size < num_nodes) {
@@ -89,16 +90,12 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     }
 
     // Compute path length (path distance) by summing edge weights along the path
-    int i;
-    float path_length = 0.0; // `l` in the text
-    for (i = 1; i < path_size; i++) {
-        path_length += read_2D(adjacency_matrix, path[i-1], path[i], num_nodes);
-    }
-    float w = 1.0/path_length;
+    float path_length = calc_path_length(path_size, adjacency_matrix, path);
+    float w = 1.0/path_length; // Amount of new pheramones on each edge of the path
 
     // Update tau
     // TODO: this probably has high cache miss rate
-    for (i = 1; i < path_size; i++) {
+    for (int i = 1; i < path_size; i++) {
         int node_x = path[i-1];
         int node_y = path[i];
         float tk = read_2D(tau, node_x, node_y, num_nodes);
@@ -120,5 +117,30 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
 void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         float a, float b, float p)
 {
+    int n = num_nodes*num_nodes;
+    float tau[n];
+    float eta[n];
+
+    float w;
+    for (int i = 0; i < num_nodes; i++) {
+        for (int j = 0; j < num_nodes; j++) {
+            w = read_2D(adjacency_matrix, i, j, num_nodes);
+            write_2D(eta, i, j, num_nodes, 1.0/w);
+            write_2D(tau, i, j, num_nodes, 1.0);
+        }
+    }
+
+    printf("tau:\n");
+    display_adjacency_matrix(num_nodes, tau);
+    printf("eta:\n");
+    display_adjacency_matrix(num_nodes, eta);
+
+    int best_path[num_nodes] = {0};
+    float best_path_length = std::numeric_limits<float>::max();
+
+    // Iterate
+    for (int i = 0; i < k_max; i++) {
+    
+    }
 
 }

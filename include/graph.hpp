@@ -7,8 +7,8 @@
  * 
 */
 
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
+#ifndef __GRAPH_HPP__
+#define __GRAPH_HPP__
 
 #include <string>
 
@@ -19,6 +19,8 @@
 // node list stores the x and y coordinates of the cities
 // adjacency matrix stores the distance between the cities
 
+// TODO: inline read_2D and write_2D, or make them a macro to reduce
+// function overhead since these are extremely frequently called fns
 void write_2D(float *array, int row, int col, int dim2, float value);
 float read_2D(float *array, int row, int col, int dim2);
 
@@ -27,10 +29,12 @@ void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_mat
 
 void print_node_list(int num_nodes, float *node_list);
 void print_adjacency_matrix(int num_nodes, float *adjacency_matrix);
+void display_adjacency_matrix(int num_nodes, float *adjacency_matrix);
 
 void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
 int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
 
-float path_length(int num_nodes, float *adjacency_matrix, int *path);
+// TODO: inline this?
+float calc_path_length(int num_nodes, float *adjacency_matrix, int *path);
 
 #endif
