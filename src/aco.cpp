@@ -9,7 +9,7 @@
 void print_iter(iter_t iter, int num_nodes)
 {
     printf("iter_t {\n\tpath = [ ");
-    for (int i = 0; i < num_nodes; i++) {
+    for (int i = 0; i < num_nodes-1; i++) {
         printf("%d ", iter.path[i]);
     }
     printf("]\n\t len = %f\n}\n", iter.length);
@@ -101,12 +101,24 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
         visited[i] = true;
     }
 
+    /*
+    printf("visited:\n");
+    for (int j = 0; j < num_nodes; j++) {
+        printf("%d ", visited[j] ? 1 : 0);
+    }
+    printf("\n");
+    printf("ant walked:\n");
+    for (int j = 0; j < num_nodes; j++) {
+        printf("%d ", path[j]);
+    }
+    printf("\n");
+    */
+
     // Compute path length (path distance) by summing edge weights along the path
-    float path_length = calc_path_length(path_size, adjacency_matrix, path);
+    float path_length = calc_path_length(path_size, adjacency_matrix, path, path_size);
     float w = 1.0/path_length; // Amount of new pheramones on each edge of the path
 
     // Update tau
-    // TODO: this probably has high cache miss rate
     int node_x, node_y;
     float tk;
     for (int i = 1; i < path_size; i++) {
@@ -144,6 +156,7 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         }
     }
 
+    display_matrix(num_nodes, adjacency_matrix, "matrix start");
     display_matrix(num_nodes, tau, "tau start");
     display_matrix(num_nodes, eta, "eta start");
 
@@ -175,9 +188,8 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         for (int a = 0; a < m; a++) {
             best = run_ant(adjacency_matrix, num_nodes, tau, A, best);
         }
-        display_matrix(num_nodes, tau, "tau");
     }
-
+    display_matrix(num_nodes, tau, "final tau");
 
     return best;
 }

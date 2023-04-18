@@ -11,6 +11,7 @@
 #define __GRAPH_HPP__
 
 #include <string>
+#include <vector>
 
 // nodes are represented by the x and y coordinates of the cities
 // all edges are undirected with weight equal to the distance between the two cities
@@ -35,6 +36,8 @@ void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighb
 int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
 
 // TODO: inline this?
-float calc_path_length(int num_nodes, float *adjacency_matrix, int *path);
+float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size);
+
+std::vector<int> read_optimal(std::string filename);
 
 #endif

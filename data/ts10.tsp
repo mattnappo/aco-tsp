@@ -1,5 +1,5 @@
-NAME: ts10
-COMMENT : 10 testing locations
+NAME: ts11
+COMMENT : 11 testing locations
 TYPE: TSP
 DIMENSION: 11
 EDGE_WEIGHT_TYPE: EUC_2D

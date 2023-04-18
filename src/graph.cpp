@@ -10,6 +10,7 @@
 #include <cmath>
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 #include "graph.hpp"
 
@@ -79,7 +80,8 @@ void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_mat
             float y1 = read_2D(node_list, i, 1, 2);
             float x2 = read_2D(node_list, j, 0, 2);
             float y2 = read_2D(node_list, j, 1, 2);
-            float distance = 1.0f/sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+            //float distance = 1.0f/sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+            float distance = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
             write_2D(adjacency_matrix, i, j, num_nodes, distance);
             write_2D(adjacency_matrix, j, i, num_nodes, distance);
         }
@@ -109,9 +111,11 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     // if there are no unvisited neighbors, return -1. Otherwise, return the number of unvisited neighbors
 
     int num_unvisited_neighbors = 0;
+    float inf = std::numeric_limits<float>::max();
     for (int i = 0; i < num_nodes; i++)
     {
-        if (read_2D(adjacency_matrix, node, i, num_nodes) > 0 && !visited[i])
+        float w = read_2D(adjacency_matrix, node, i, num_nodes);
+        if (w > 0 && w < inf && !visited[i]) 
         {
             neighbors[num_unvisited_neighbors] = i;
             num_unvisited_neighbors++;
@@ -127,13 +131,13 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     }
 }
 
-float calc_path_length(int num_nodes, float *adjacency_matrix, int *path)
+float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size)
 {
     // calculate the length of a path
     // the length of a path is the sum of the distances between the nodes in the path
 
     float length = 0.0f;
-    for (int i = 0; i < num_nodes - 1; i++)
+    for (int i = 0; i < path_size - 1; i++)
     {
         length += read_2D(adjacency_matrix, path[i], path[i + 1], num_nodes);
     }

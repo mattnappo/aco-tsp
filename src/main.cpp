@@ -3,11 +3,13 @@
 #include "graph.hpp"
 #include "aco.hpp"
 
+#define SOLVE_FILE "/u/mnappo/ts10.sol"
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        std::cout << "Usage: ./main <filename>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 1;
     }
 
@@ -32,10 +34,24 @@ int main(int argc, char *argv[])
 
     // Run ACO tests
     int   m = 100; // num ants
-    int   k = 100; // num iter
+    int   k = 150; // num iter
     float a = 1.0; // alpha
     float b = 5.0; // beta
     float p = 0.5; // rho
     iter_t best = run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
     print_iter(best, num_nodes);
+
+    // Read optimal path
+    std::vector<int> optimal = read_optimal(SOLVE_FILE);
+    int *optimal_path = &optimal[0];
+    float optimal_length = calc_path_length(num_nodes, adjacency_matrix, optimal_path, optimal.size());
+
+    printf("optimal: \n");
+    print_iter((iter_t) { optimal_path, optimal_length }, num_nodes);
+
+    print_node_list(num_nodes, node_list);
+
+    delete[] node_list;
+    delete[] adjacency_matrix;
+
 }

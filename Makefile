@@ -1,7 +1,6 @@
 # the source files are in src/ directory
 # the header files are in include/ directory
 # the main program remains in the current directory
-
 # the compiler
 CC := g++
 
@@ -45,7 +44,7 @@ debug: $(TARGET)
 
 # the valgrind target
 valgrind: $(TARGET)
-	valgrind --leak-check=full ./$(TARGET)
+	valgrind --leak-check=full ./$(TARGET) ts11.tsp
 
 # the cppcheck target
 cppcheck:
