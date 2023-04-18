@@ -5,6 +5,16 @@
 #include "aco.hpp"
 #include "graph.hpp"
 
+// Print the iter_t structure
+void print_iter(iter_t iter, int num_nodes)
+{
+    printf("iter_t {\n\tpath = [ ");
+    for (int i = 0; i < num_nodes; i++) {
+        printf("%d ", iter.path[i]);
+    }
+    printf("]\n\t len = %f\n}\n", iter.length);
+}
+
 // Sum an array of n floats
 // TODO: OpenMP this
 float sum_array(int n, float *values)
@@ -64,20 +74,22 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     memset(visited, 0, num_nodes);
 
     // Try to visit every node
+    int i;
+    int neighbors[num_nodes];
+    int num_unvisited;
     while (path_size < num_nodes) {
         // Get the neighbors of the last node visited
-        int i = path[path_size-1];
-        int neighbors[num_nodes];
-        int num_unvisited = get_unvisited_neighbors(num_nodes, adjacency_matrix,
-                i, neighbors, visited);
-        // If path complete or ant got stuck, then return
+        i = path[path_size-1];
+        num_unvisited = get_unvisited_neighbors(num_nodes, adjacency_matrix,
+            i, neighbors, visited);
+        // If path complete or ant got stuck, return
         if (num_unvisited == -1) {
             return iter;
         }
 
         // Collect the attractivenesses of the unvisited neighbors
         float as[num_unvisited];
-        for (int j = 0; i < num_unvisited; j++) {
+        for (int j = 0; j < num_unvisited; j++) {
             as[j] = read_2D(A, i, j, num_unvisited);
         }
 
@@ -95,10 +107,12 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
 
     // Update tau
     // TODO: this probably has high cache miss rate
+    int node_x, node_y;
+    float tk;
     for (int i = 1; i < path_size; i++) {
-        int node_x = path[i-1];
-        int node_y = path[i];
-        float tk = read_2D(tau, node_x, node_y, num_nodes);
+        node_x = path[i-1];
+        node_y = path[i];
+        tk = read_2D(tau, node_x, node_y, num_nodes);
         write_2D(tau, node_x, node_y, num_nodes, tk + w);
     }
 
@@ -114,13 +128,13 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
 }
 
 // Run the ant colony optimization algorithm on a graph.
-void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
+iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         float a, float b, float p)
 {
+    // Initialize everything
     int n = num_nodes*num_nodes;
     float tau[n];
     float eta[n];
-
     float w;
     for (int i = 0; i < num_nodes; i++) {
         for (int j = 0; j < num_nodes; j++) {
@@ -130,17 +144,40 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         }
     }
 
-    printf("tau:\n");
-    display_adjacency_matrix(num_nodes, tau);
-    printf("eta:\n");
-    display_adjacency_matrix(num_nodes, eta);
+    display_matrix(num_nodes, tau, "tau start");
+    display_matrix(num_nodes, eta, "eta start");
+
+    float v;
+    float A[n] ={0.0};
+    float rho_c = 1.0f-p;
 
     int best_path[num_nodes] = {0};
     float best_path_length = std::numeric_limits<float>::max();
+    iter_t best = {
+        .path = best_path,
+        .length = best_path_length
+    };
 
-    // Iterate
-    for (int i = 0; i < k_max; i++) {
-    
+    // Main iteration loop (k-loop)
+    for (int k = 0; k < k_max; k++) {
+        // Compute reward matrix
+        edge_attractiveness(A, adjacency_matrix, num_nodes, tau, eta, a, b);
+
+        // Update tau decay factor
+        for (int i = 0; i < num_nodes; i++) {
+            for (int j = 0; j < num_nodes; j++) {
+                v = read_2D(tau, i, j, num_nodes);
+                write_2D(tau, i, j, num_nodes, rho_c*v);
+            }
+        }
+
+        // Run ants
+        for (int a = 0; a < m; a++) {
+            best = run_ant(adjacency_matrix, num_nodes, tau, A, best);
+        }
+        display_matrix(num_nodes, tau, "tau");
     }
 
+
+    return best;
 }

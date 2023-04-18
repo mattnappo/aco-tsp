@@ -36,5 +36,6 @@ int main(int argc, char *argv[])
     float a = 1.0; // alpha
     float b = 5.0; // beta
     float p = 0.5; // rho
-    run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
+    iter_t best = run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
+    print_iter(best, num_nodes);
 }

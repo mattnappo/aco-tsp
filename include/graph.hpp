@@ -29,7 +29,7 @@ void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_mat
 
 void print_node_list(int num_nodes, float *node_list);
 void print_adjacency_matrix(int num_nodes, float *adjacency_matrix);
-void display_adjacency_matrix(int num_nodes, float *adjacency_matrix);
+void display_matrix(int num_nodes, float *adjacency_matrix, char *name);
 
 void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
 int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);

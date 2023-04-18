@@ -165,8 +165,11 @@ void print_adjacency_matrix(int num_nodes, float *adjacency_matrix)
     }
 }
 
-void display_adjacency_matrix(int num_nodes, float *adjacency_matrix)
+void display_matrix(int num_nodes, float *adjacency_matrix, char *name)
 {
+    if (name)
+        printf("%s:\n", name);
+
     for (int i = 0; i < num_nodes; i++) {
         for (int j = 0; j < num_nodes; j++) {
             float v = read_2D(adjacency_matrix, i, j, num_nodes);
