@@ -11,8 +11,7 @@ typedef struct ITER_T {
 // Print the iter_t structure
 void print_iter(iter_t iter, int num_nodes);
 
-// Sample an integer in the range [0,k) according to k weights
-int sample(int k, float *weights);
+int sample(int *ints, float *weights);
 
 // Sum an array of n floats
 float sum_array(int n, float *values);

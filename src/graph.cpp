@@ -23,6 +23,8 @@ void write_2D(float *array, int row, int col, int dim2, float value)
 // read a value from a 2D array
 float read_2D(float *array, int row, int col, int dim2)
 {
+    if (row > 1000 || col > 1000)
+        printf("read at %d %d %d\n", row, col, dim2);
     return array[row * dim2 + col];
 }
 
@@ -115,7 +117,7 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     for (int i = 0; i < num_nodes; i++)
     {
         float w = read_2D(adjacency_matrix, node, i, num_nodes);
-        if (w > 0 && w < inf && !visited[i]) 
+        if (w > 0 && w < inf && w > 0 && !visited[i]) 
         {
             neighbors[num_unvisited_neighbors] = i;
             num_unvisited_neighbors++;
@@ -141,7 +143,7 @@ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int pa
     {
         length += read_2D(adjacency_matrix, path[i], path[i + 1], num_nodes);
     }
-    //length += read_2D(adjacency_matrix, path[num_nodes - 1], path[0], num_nodes); // I dont think we need this
+    length += read_2D(adjacency_matrix, path[path_size - 1], path[0], num_nodes); // I dont think we need this
     return length;
 }
 

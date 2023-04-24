@@ -41,7 +41,6 @@ std::vector<int> read_optimal(std::string filename)
         joiner << l << " ";
     }
     std::string nodes_str = joiner.str();
-    std::cout << "nodes: " << nodes_str << std::endl;
 
     // Split and map to ints
     std::vector<std::string> nodes;

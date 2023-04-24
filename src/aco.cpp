@@ -1,6 +1,7 @@
 #include <cstring>
 #include <cmath>
 #include <limits>
+#include <random>
 
 #include "aco.hpp"
 #include "graph.hpp"
@@ -27,6 +28,7 @@ float sum_array(int n, float *values)
     return sum;
 }
 
+/*
 // Sample an integer in the range [0,k) according to k weights
 // TODO: Replace the linear search with binary search and OpenMP the loop
 int sample(int k, float *weights)
@@ -43,6 +45,31 @@ int sample(int k, float *weights)
         cum += w;
     }
     return -1;
+}
+*/
+
+int sample(int *ints, float *weights)
+{
+
+    std::mt19937 gen(std::random_device{}());
+    int k = sizeof(ints) / sizeof(ints[0]);
+    int n = sizeof(weights) / sizeof(weights[0]);
+    if (k != n) {
+        fprintf(stderr, "cannot sample when n != k");
+        return -1;
+    }
+
+    std::vector<double> chances(weights, weights+k);
+
+    // Initialize to same length.
+    std::vector<int> points(ints, ints+k);
+
+    // size_t is suitable for indexing.
+    std::discrete_distribution<std::size_t> d{chances.begin(), chances.end()};
+
+    auto sampled_value = points[d(gen)];
+
+    return sampled_value;
 }
 
 // Compute the edge attractiveness matrix given the graph, tau, eta, a, and b.
@@ -78,28 +105,42 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     int neighbors[num_nodes];
     int num_unvisited;
     while (path_size < num_nodes) {
-        // Get the neighbors of the last node visited
-        i = path[path_size-1];
+        i = path[path_size-1]; // Last node visited
+        // Get unvisited neighbors of the last node visited
         num_unvisited = get_unvisited_neighbors(num_nodes, adjacency_matrix,
             i, neighbors, visited);
         // If path complete or ant got stuck, return
         if (num_unvisited == -1) {
             return iter;
         }
+        printf("unvisited (%d) neighbors of %d: [ ", num_unvisited, i);
+        for (int jj = 0; jj < num_unvisited; jj++) {
+            printf("%d ", neighbors[jj]);
+        }
+        printf("] ");
 
         // Collect the attractivenesses of the unvisited neighbors
         float as[num_unvisited];
         for (int j = 0; j < num_unvisited; j++) {
             as[j] = read_2D(A, i, j, num_unvisited);
         }
+        printf("[ ");
+        for (int jj = 0; jj < num_unvisited; jj++) {
+            printf("%f ", as[jj]);
+        }
+        printf("]\n");
 
         // Sample the distribution
-        int next_node = neighbors[sample(num_unvisited, as)];
+        int choice = sample(neighbors, as);
+        printf("picked %d\n", choice);
+        int next_node = choice;
         path[path_size++] = next_node;
 
         // Mark as visited
         visited[i] = true;
+        printf("\n");
     }
+    // now pathsize = numnodes = 11
 
     /*
     printf("visited:\n");
@@ -115,7 +156,14 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     */
 
     // Compute path length (path distance) by summing edge weights along the path
-    float path_length = calc_path_length(path_size, adjacency_matrix, path, path_size);
+    printf("path size: %d\n", path_size);
+    //display_matrix(num_nodes, adjacency_matrix, "adj mat");
+    printf("path: [ ");
+    for (int jj = 0; jj < path_size; jj++) {
+        printf("%d ", path[jj]);
+    }
+    printf("]\n");
+    float path_length = calc_path_length(num_nodes, adjacency_matrix, path, path_size);
     float w = 1.0/path_length; // Amount of new pheramones on each edge of the path
 
     // Update tau
@@ -145,8 +193,8 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
 {
     // Initialize everything
     int n = num_nodes*num_nodes;
-    float tau[n];
-    float eta[n];
+    float *tau = new float[n];
+    float *eta = new float[n];
     float w;
     for (int i = 0; i < num_nodes; i++) {
         for (int j = 0; j < num_nodes; j++) {
@@ -186,10 +234,14 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
 
         // Run ants
         for (int a = 0; a < m; a++) {
+            //printf("main loop (%d, %d)\n", k, a); // crashes at 151, 0
             best = run_ant(adjacency_matrix, num_nodes, tau, A, best);
         }
     }
     display_matrix(num_nodes, tau, "final tau");
+
+    //delete[] tau;
+    //delete[] eta;
 
     return best;
 }
