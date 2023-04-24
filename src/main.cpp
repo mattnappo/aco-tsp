@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     // Run ACO tests
-    int   m = 100; // num ants
-    int   k = 50; // num iter
-    float a = 1.0; // alpha
-    float b = 1.0; // beta
+    int   m = 10000; // num ants
+    int   k = 500; // num iter
+    float a = .5f; // alpha
+    float b = .5f; // beta
     float p = 0.5; // rho
     iter_t best = run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);

@@ -80,6 +80,7 @@ void edge_attractiveness(float *A, float *adjacency_matrix, int num_nodes,
             write_2D(A, i, j, num_nodes, v);
         }
     }
+    // display_matrix(num_nodes, A, "Attraction Matrix");
 }
 
 // Run a single ant, which will update tau
@@ -131,7 +132,7 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
 
         // Mark as visited
         visited[i] = true;
-        printf("\n");
+        // printf("\n");
     }
     // now pathsize = numnodes = 11
 
@@ -189,10 +190,15 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     float *tau = new float[n];
     float *eta = new float[n];
     float w;
+
     for (int i = 0; i < num_nodes; i++) {
         for (int j = 0; j < num_nodes; j++) {
             w = read_2D(adjacency_matrix, i, j, num_nodes);
-            write_2D(eta, i, j, num_nodes, 1.0/w);
+            if(w != 0) {
+                write_2D(eta, i, j, num_nodes, 1.0/w);
+            }else{
+                write_2D(eta, i, j, num_nodes, 0.0);
+            }
             write_2D(tau, i, j, num_nodes, 1.0);
         }
     }
@@ -226,6 +232,7 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         }
 
         // Run ants
+        #pragma omp parallel for
         for (int a = 0; a < m; a++) {
             //printf("main loop (%d, %d)\n", k, a); // crashes at 151, 0
             best = run_ant(adjacency_matrix, num_nodes, tau, A, best);

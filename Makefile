@@ -49,3 +49,9 @@ valgrind: $(TARGET)
 # the cppcheck target
 cppcheck:
 	cppcheck --enable=all --inconclusive --std=c++11 --suppress=missingIncludeSystem $(SRC)
+
+# make with openmp
+omp: $(OBJ) src/main.cpp
+	$(CC) $(CFLAGS) -fopenmp -o $(TARGET) $^
+
+	
