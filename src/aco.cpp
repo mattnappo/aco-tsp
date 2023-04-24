@@ -48,16 +48,9 @@ int sample(int k, float *weights)
 }
 */
 
-int sample(int *ints, float *weights)
+int sample(int k, int *ints, float *weights)
 {
-
     std::mt19937 gen(std::random_device{}());
-    int k = sizeof(ints) / sizeof(ints[0]);
-    int n = sizeof(weights) / sizeof(weights[0]);
-    if (k != n) {
-        fprintf(stderr, "cannot sample when n != k");
-        return -1;
-    }
 
     std::vector<double> chances(weights, weights+k);
 
@@ -113,26 +106,26 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
         if (num_unvisited == -1) {
             return iter;
         }
-        printf("unvisited (%d) neighbors of %d: [ ", num_unvisited, i);
-        for (int jj = 0; jj < num_unvisited; jj++) {
-            printf("%d ", neighbors[jj]);
-        }
-        printf("] ");
+        //printf("unvisited (%d) neighbors of %d: [ ", num_unvisited, i);
+        //for (int jj = 0; jj < num_unvisited; jj++) {
+        //    printf("%d ", neighbors[jj]);
+        //}
+        //printf("] ");
 
         // Collect the attractivenesses of the unvisited neighbors
         float as[num_unvisited];
         for (int j = 0; j < num_unvisited; j++) {
             as[j] = read_2D(A, i, j, num_unvisited);
         }
-        printf("[ ");
-        for (int jj = 0; jj < num_unvisited; jj++) {
-            printf("%f ", as[jj]);
-        }
-        printf("]\n");
+        //printf("[ ");
+        //for (int jj = 0; jj < num_unvisited; jj++) {
+        //    printf("%f ", as[jj]);
+        //}
+        //printf("]\n");
 
         // Sample the distribution
-        int choice = sample(neighbors, as);
-        printf("picked %d\n", choice);
+        int choice = sample(num_unvisited, neighbors, as);
+        //printf("picked %d\n", choice);
         int next_node = choice;
         path[path_size++] = next_node;
 
@@ -156,13 +149,13 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
     */
 
     // Compute path length (path distance) by summing edge weights along the path
-    printf("path size: %d\n", path_size);
+    //printf("path size: %d\n", path_size);
     //display_matrix(num_nodes, adjacency_matrix, "adj mat");
-    printf("path: [ ");
-    for (int jj = 0; jj < path_size; jj++) {
-        printf("%d ", path[jj]);
-    }
-    printf("]\n");
+    //printf("path: [ ");
+    //for (int jj = 0; jj < path_size; jj++) {
+    //    printf("%d ", path[jj]);
+    //}
+    //printf("]\n");
     float path_length = calc_path_length(num_nodes, adjacency_matrix, path, path_size);
     float w = 1.0/path_length; // Amount of new pheramones on each edge of the path
 

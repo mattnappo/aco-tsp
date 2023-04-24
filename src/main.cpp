@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     // Run ACO tests
     int   m = 100; // num ants
-    int   k = 190; // num iter
+    int   k = 50; // num iter
     float a = 1.0; // alpha
     float b = 1.0; // beta
     float p = 0.5; // rho
