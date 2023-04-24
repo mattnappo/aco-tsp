@@ -5,7 +5,7 @@
 CC := g++
 
 # the compiler flags
-CFLAGS := -Wall -g -Iinclude
+CFLAGS := -Wall -g -Iinclude -fopenmp
 
 # source files in src/ directory
 SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
@@ -50,8 +50,3 @@ valgrind: $(TARGET)
 cppcheck:
 	cppcheck --enable=all --inconclusive --std=c++11 --suppress=missingIncludeSystem $(SRC)
 
-# make with openmp
-omp: $(OBJ) src/main.cpp
-	$(CC) $(CFLAGS) -fopenmp -o $(TARGET) $^
-
-	

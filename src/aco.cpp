@@ -10,7 +10,7 @@
 void print_iter(iter_t iter, int num_nodes)
 {
     printf("iter_t {\n\tpath = [ ");
-    for (int i = 0; i < num_nodes-1; i++) {
+    for (int i = 0; i < num_nodes; i++) {
         printf("%d ", iter.path[i]);
     }
     printf("]\n\t len = %f\n}\n", iter.length);
@@ -28,40 +28,17 @@ float sum_array(int n, float *values)
     return sum;
 }
 
-/*
-// Sample an integer in the range [0,k) according to k weights
-// TODO: Replace the linear search with binary search and OpenMP the loop
-int sample(int k, float *weights)
-{
-    float sum = sum_array(k, weights);
-
-    float p = (float)rand()/(float)(RAND_MAX/sum);
-    float cum = 0;
-    for (int i = 0; i < k; i++) {
-        float w = weights[i];
-        if (cum + w >= p) {
-            return i;
-        }
-        cum += w;
-    }
-    return -1;
-}
-*/
-
+// From https://stackoverflow.com/questions/69873685/how-to-randomly-pick-element-from-an-array-with-different-probabilities-in-c
 int sample(int k, int *ints, float *weights)
 {
     std::mt19937 gen(std::random_device{}());
 
     std::vector<double> chances(weights, weights+k);
-
-    // Initialize to same length.
     std::vector<int> points(ints, ints+k);
 
-    // size_t is suitable for indexing.
     std::discrete_distribution<std::size_t> d{chances.begin(), chances.end()};
 
     auto sampled_value = points[d(gen)];
-
     return sampled_value;
 }
 
@@ -208,7 +185,7 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     display_matrix(num_nodes, eta, "eta start");
 
     float v;
-    float A[n] ={0.0};
+    float *A = new float[n];
     float rho_c = 1.0f-p;
 
     int best_path[num_nodes] = {0};
@@ -240,8 +217,9 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     }
     display_matrix(num_nodes, tau, "final tau");
 
-    //delete[] tau;
-    //delete[] eta;
+    delete[] tau;
+    delete[] eta;
+    delete[] A;
 
     return best;
 }

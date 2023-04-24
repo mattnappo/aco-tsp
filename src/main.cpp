@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     // Run ACO tests
-    int   m = 10000; // num ants
-    int   k = 500; // num iter
+    int   m = 100; // num ants
+    int   k = 100; // num iter
     float a = .5f; // alpha
     float b = .5f; // beta
     float p = 0.5; // rho

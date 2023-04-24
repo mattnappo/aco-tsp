@@ -138,12 +138,17 @@ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int pa
     // calculate the length of a path
     // the length of a path is the sum of the distances between the nodes in the path
 
-    float length = 0.0f;
-    for (int i = 0; i < path_size - 1; i++)
-    {
-        length += read_2D(adjacency_matrix, path[i], path[i + 1], num_nodes);
+    if (num_nodes != path_size) {
+        fprintf(stderr, "err in calc_path_len: num_nodes != path_size (this should not happen)\n");
+        return -1;
     }
-    length += read_2D(adjacency_matrix, path[path_size - 1], path[0], num_nodes); // I dont think we need this
+
+    float length = 0.0f;
+    for (int i = 0; i < path_size; i++)
+    {
+        length += read_2D(adjacency_matrix, path[i], path[(i + 1) % path_size], num_nodes);
+    }
+    //length += read_2D(adjacency_matrix, path[path_size - 1], path[0], num_nodes); // I dont think we need this
     return length;
 }
 
