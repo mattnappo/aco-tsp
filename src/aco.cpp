@@ -16,18 +16,6 @@ void print_iter(iter_t iter, int num_nodes)
     printf("]\n\t len = %f\n}\n", iter.length);
 }
 
-// Sum an array of n floats
-// TODO: OpenMP this
-float sum_array(int n, float *values)
-{
-    int i;
-    float sum = 0.0;
-    for (i = 0; i < n; i++) {
-        sum += values[i];
-    }
-    return sum;
-}
-
 // From https://stackoverflow.com/questions/69873685/how-to-randomly-pick-element-from-an-array-with-different-probabilities-in-c
 int sample(int k, int *ints, float *weights)
 {

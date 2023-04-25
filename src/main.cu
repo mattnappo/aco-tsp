@@ -2,8 +2,13 @@
 #include <cuda.h>
 
 #include "graph.hpp"
-#include "aco.hpp"
 #include "par_aco.cuh"
+
+#define NUM_ANTS  10000000
+#define NUM_ITER  10
+#define ALPHA     1.0f
+#define BETA      4.0f
+#define RHO       0.5f
 
 int main(int argc, char** argv) {
 
@@ -32,33 +37,74 @@ int main(int argc, char** argv) {
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
+    /* -- kernel wrapper -- */
+
     // device copies of node list and adjacency matrix
     float *d_node_list;
     float *d_adjacency_matrix;
+    float *d_tau;
+    float *d_A; // reward matrix A
+    /* TODO
+       lets think about tours. proposed idea: NxM matrix of ints where
+       N = num nodes
+       M = num ants
+       Ants (threads) index into this big matrix to report their tour.
+       Allows us to easily see all the tours at the end of each iteration
+       Might be slow?
+    */
+    int *d_tours;
+
+    // TODO: check return codes of all cuda function calls
 
     // allocate memory on device
-    cudaMalloc((void**)&d_node_list, num_nodes * 2 * sizeof(float));
-    cudaMalloc((void**)&d_adjacency_matrix, num_nodes * num_nodes * sizeof(float));
+    int n = num_nodes * num_nodes;
+    cudaMalloc((void**)&d_node_list, num_nodes * 2 * sizeof(float)); // TODO I don't htink this needs to be on the GPU
+    cudaMalloc((void**)&d_adjacency_matrix, n * sizeof(float));
+    cudaMalloc((void**)&d_tau, n * sizeof(float));
+    cudaMalloc((void**)&d_A, n * sizeof(float));
+    cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
 
     // copy node list and adjacency matrix to device
     cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_adjacency_matrix, adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyHostToDevice);
+
+    cudaMemset(d_tau,   0, n * sizeof(float));
+    cudaMemset(d_A,     0, n * sizeof(float)); // Initially, it is just adj_mat
+    cudaMemset(d_tours, 0, num_nodes * NUM_ANTS * sizeof(int));
+
+    // Initialize tau and A (TODO)
     
     // Run ACO tests
-    int   m = 10000000; // num ants
-    int   k = 10; // num iter
-    float a = 1.0f; // alpha
-    float b = 4.0f; // beta
-    float p = .5; // rho
+    int   m = NUM_ANTS;
+    int   k = NUM_ITER;
+    float a = ALPHA;
+    float b = BETA;
+    float p = RHO;
 
     int n_threads = 32; // warp size
     int n_blocks = m / n_threads;
 
     while(k >= 0) {
-        // run ant colony optimization
-        iter_t best_path = ant_colony_optimization<<<n_blocks, n_threads>>>(m, k, a, b, p, num_nodes, d_node_list, d_adjacency_matrix);
-        cudaDeviceSynchronize();
-        pheromone_update<<<1,1>>>(m, k, p, num_nodes, d_node_list, d_adjacency_matrix);        
+        // Perform ant tour construction
+        tour_construction<<<n_blocks, n_threads>>>(d_adjacency_matrix, d_A, num_nodes, a, b, p);
+
+        cudaDeviceSynchronize(); // Thread barrier
+
+        // Update tau
+        /* TODO: think about what this kernel actually needs
+           To minimize data transfer, each ant can "return" its tour, and 1/l (where l is tour length)
+           Then, the parallel pheromone update kernel can look at all the tours of all the ants
+           and sum the 1/l's for each edge to deposit pheromones, updating tau accordingly.
+           This kernel should also update the reward matrix A (A = tau^a * eta^b)
+           NOTE: eta is just adj_mat
+
+           General Q: What is the correct way to make a thread "return" a value?
+           Does it write its output to some location in memory, or does it actually
+           return a value? If the former, does the thread return a pointer to the memory
+           it wrote to?
+        */
+        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_tau, num_nodes, d_tours, a, b, p, m);
+
         k--;
     }
 
@@ -69,7 +115,7 @@ int main(int argc, char** argv) {
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
-    print_iter(best, num_nodes);
+    //print_iter(best, num_nodes);
 
     // Read optimal path
     std::vector<int> optimal = read_optimal(argv[2]);

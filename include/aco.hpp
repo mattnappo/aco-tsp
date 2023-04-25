@@ -13,9 +13,6 @@ void print_iter(iter_t iter, int num_nodes);
 
 int sample(int k, int *ints, float *weights);
 
-// Sum an array of n floats
-float sum_array(int n, float *values);
-
 // Compute the edge attractiveness matrix given the graph, tau, eta, a, and b.
 // Store the output in `float *A`
 void edge_attractiveness(float *A, float *adjacency_matrix, int num_nodes,
