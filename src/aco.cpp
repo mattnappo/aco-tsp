@@ -217,9 +217,9 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     }
     display_matrix(num_nodes, tau, "final tau");
 
-    delete[] tau;
-    delete[] eta;
-    delete[] A;
+    // delete[] tau;
+    // delete[] eta;
+    // delete[] A;
 
     return best;
 }

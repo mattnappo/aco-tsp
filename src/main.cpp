@@ -3,21 +3,21 @@
 #include "graph.hpp"
 #include "aco.hpp"
 
-#define SOLVE_FILE "./ts11.sol"
+// #define SOLVE_FILE "./ts11.sol"
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <filename> <solution.sol>" << std::endl;
         return 1;
     }
 
     std::string filename = argv[1];
 
     // parse the filename to get the number of nodes 
-    int num_nodes = std::stoi(filename.substr(2, filename.find(".tsp") - 2));
-    filename = "data/" + filename;
+    int num_nodes = std::stoi(filename.substr(7, filename.find(".tsp") - 2));
+    // filename = "data/" + filename;
 
     std::cout << "Number of nodes: " << num_nodes << std::endl;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     // Run ACO tests
     int   m = 100; // num ants
-    int   k = 100; // num iter
+    int   k = 500; // num iter
     float a = .5f; // alpha
     float b = .5f; // beta
     float p = 0.5; // rho
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     print_iter(best, num_nodes);
 
     // Read optimal path
-    std::vector<int> optimal = read_optimal(SOLVE_FILE);
+    std::vector<int> optimal = read_optimal(argv[2]);
     int *optimal_path = &optimal[0];
     float optimal_length = calc_path_length(num_nodes, adjacency_matrix, optimal_path, optimal.size());
 

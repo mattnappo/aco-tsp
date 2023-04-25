@@ -5,7 +5,7 @@
 CC := g++
 
 # the compiler flags
-CFLAGS := -Wall -g -Iinclude -fopenmp
+CFLAGS := -Wall -g -Iinclude -fopenmp -O3
 
 # source files in src/ directory
 SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))

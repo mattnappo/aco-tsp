@@ -22,7 +22,7 @@ void test_sample()
 
 int main(int argc, char *argv[])
 {
-    test_sample();
-
+    // test_sample();
+    read_optimal("sols/dj38.sol");
     return 0;
 }

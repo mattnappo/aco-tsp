@@ -24,24 +24,22 @@ std::vector<int> read_optimal(std::string filename)
         std::cerr << "Could not open " << filename << " input file\n";
         return std::vector<int>();
     }
-    std::vector<std::string> lines;
+
+    // Skip first line
     std::string line;
+    std::getline(file, line);
+
+    // Read nodes
+    // std::getline(file, line);
+    std::stringstream joiner;
     while (std::getline(file, line)) {
-        lines.push_back(line);
+        joiner << line;;
     }
-    file.close();
 
-    // Remove first and last lines
-    lines.erase(lines.begin());
-    lines.erase(lines.end()-1);
+        
 
-    // Join into one space-separated line
-    std::ostringstream joiner;
-    for (const auto &l : lines) {
-        joiner << l << " ";
-    }
     std::string nodes_str = joiner.str();
-
+    std::cout << nodes_str << std::endl;
     // Split and map to ints
     std::vector<std::string> nodes;
     str_split(nodes_str, nodes);
