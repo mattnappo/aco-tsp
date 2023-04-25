@@ -8,16 +8,20 @@ Aayush
    - [x] Write dataloader for TSP dataset(s)
 
 Matt
-- [ ] Implement generic ACO algorithm
-- [ ] Implement ACO for TSP on the CPU, sequentially
-- [ ] Write tests
+- [X] Implement generic ACO algorithm
+- [X] Implement ACO for TSP on the CPU, sequentially
+- [X] Write tests
 
-Finish by Sunday night
-
-Later:
-- [ ] Implement ACO for TSP on the GPU, using parallelism
+Now:
+- [-] Implement ACO for TSP on the GPU, using parallelism
 - [ ] Benchmark
    - [ ] Benchmark the CPU impl
    - [ ] Benchmark the real GPU impl
-- [ ] Compare correctness (how are we going to do this?)
+- [ ] Compare correctness (how are we going to do this? answer: comparing path lengths)
 - [ ] Search the project for `TODO` since I added some potential stuff
+
+Known problems
+* CPU
+  * Invalid reads on paths in `iter_t`s
+  * Not reaching optimal on dj38 and above
+  * Freeing heap alloc arrays with `delete[]` causes `path` in `iter_t` to be null
