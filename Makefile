@@ -21,7 +21,8 @@ SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
 CUDA_SRC := $(wildcard src/*.cu)
 
 # object files in obj/ directory
-OBJ := $(patsubst src/%.cpp,obj/%.o,$(SRC))
+OBJ      := $(patsubst src/%.cpp,obj/%.o,$(SRC))
+CUDA_OBJ := $(patsubst src/%.cu,obj/%.o,$(CUDA_SRC))
 
 # the executable file
 TARGET := final
@@ -35,7 +36,7 @@ $(TARGET): $(OBJ) src/main.cpp
 	$(CC) $(CFLAGS) -o $@ $^
 
 # the executable file depends on the object files
-$(GPU_TARGET): $(OBJ) src/main.cu
+$(GPU_TARGET): $(OBJ) $(CUDA_OBJ) src/main.cu
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 tests: $(OBJ) src/tests.cpp
