@@ -12,3 +12,4 @@ sample_test.txt
 final
 tests
 sols/concorde
+.nfs*

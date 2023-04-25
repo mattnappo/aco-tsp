@@ -1,27 +1,42 @@
 # the source files are in src/ directory
 # the header files are in include/ directory
 # the main program remains in the current directory
-# the compiler
-CC := g++
+
+CC   := g++
+NVCC := nvcc
 
 # the compiler flags
-CFLAGS := -Wall -g -Iinclude -O3 # -fopenmp 
+CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
+NVCC_FLAGS :=       -g -Iinclude
+NVCC_LIBS := 
+
+# cuda config
+CUDA_ROOT_DIR=/usr/local/cuda-12.0
+CUDA_LIB_DIR= -L$(CUDA_ROOT_DIR)/lib64
+CUDA_INC_DIR= -I$(CUDA_ROOT_DIR)/include
+CUDA_LINK_LIBS= -lcudart
 
 # source files in src/ directory
 SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
+CUDA_SRC := $(wildcard src/*.cu)
 
 # object files in obj/ directory
 OBJ := $(patsubst src/%.cpp,obj/%.o,$(SRC))
 
 # the executable file
 TARGET := final
+GPU_TARGET := gpu
 
 # the default target
-all: $(TARGET)
+all: $(TARGET) $(GPU_TARGET)
 
 # the executable file depends on the object files
 $(TARGET): $(OBJ) src/main.cpp
 	$(CC) $(CFLAGS) -o $@ $^
+
+# the executable file depends on the object files
+$(GPU_TARGET): $(OBJ) src/main.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 tests: $(OBJ) src/tests.cpp
 	$(CC) $(CFLAGS) -o $@ $^
@@ -30,9 +45,13 @@ tests: $(OBJ) src/tests.cpp
 obj/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+# compile cuda objects
+obj/%.o: src/%.cu include/%.cuh
+	$(NVCC) $(NVCC_FLAGS) -c $< -o $@ $(NVCC_LIBS)
+
 # the clean target
 clean:
-	rm -f $(OBJ) $(TARGET) tests sample_test.txt
+	rm -f obj/* $(TARGET) $(GPU_TARGET) tests sample_test.txt
 
 # the run target
 run: $(TARGET)
