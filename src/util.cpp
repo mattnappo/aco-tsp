@@ -33,9 +33,9 @@ std::vector<int> read_optimal(std::string filename)
     // std::getline(file, line);
     std::stringstream joiner;
     while (std::getline(file, line)) {
-        joiner << line;;
+        joiner << line;
     }
-
+    joiner << " ";
         
 
     std::string nodes_str = joiner.str();

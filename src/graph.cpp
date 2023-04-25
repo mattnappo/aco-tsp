@@ -148,7 +148,7 @@ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int pa
     {
         length += read_2D(adjacency_matrix, path[i], path[(i + 1) % path_size], num_nodes);
     }
-    //length += read_2D(adjacency_matrix, path[path_size - 1], path[0], num_nodes); // I dont think we need this
+    // length += read_2D(adjacency_matrix, path[path_size - 1], path[0], num_nodes); // I dont think we need this
     return length;
 }
 
