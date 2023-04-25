@@ -144,6 +144,8 @@ iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, ite
         node_x = path[i-1];
         node_y = path[i];
         tk = read_2D(tau, node_x, node_y, num_nodes);
+        // atomic for open mp
+            
         write_2D(tau, node_x, node_y, num_nodes, tk + w);
     }
 

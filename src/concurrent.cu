@@ -1,12 +1,12 @@
 #include <iostream>
+#include <cuda.h>
 
 #include "graph.hpp"
 #include "aco.hpp"
+#include "par_aco.cuh"
 
-// #define SOLVE_FILE "./ts11.sol"
+int main(int argc, char** argv) {
 
-int main(int argc, char *argv[])
-{
     if (argc != 3)
     {
         std::cout << "Usage: " << argv[0] << " <filename> <solution.sol>" << std::endl;
@@ -32,13 +32,42 @@ int main(int argc, char *argv[])
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
+    // device copies of node list and adjacency matrix
+    float *d_node_list;
+    float *d_adjacency_matrix;
+
+    // allocate memory on device
+    cudaMalloc((void**)&d_node_list, num_nodes * 2 * sizeof(float));
+    cudaMalloc((void**)&d_adjacency_matrix, num_nodes * num_nodes * sizeof(float));
+
+    // copy node list and adjacency matrix to device
+    cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_adjacency_matrix, adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyHostToDevice);
+    
     // Run ACO tests
-    int   m = 10000; // num ants
-    int   k = 100; // num iter
+    int   m = 10000000; // num ants
+    int   k = 10; // num iter
     float a = 1.0f; // alpha
     float b = 4.0f; // beta
     float p = .5; // rho
-    iter_t best = run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
+
+    int n_threads = 32; // warp size
+    int n_blocks = m / n_threads;
+
+    while(k >= 0) {
+        // run ant colony optimization
+        iter_t best_path = ant_colony_optimization<<<n_blocks, n_threads>>>(m, k, a, b, p, num_nodes, d_node_list, d_adjacency_matrix);
+        cudaDeviceSynchronize();
+        pheromone_update<<<1,1>>>(m, k, p, num_nodes, d_node_list, d_adjacency_matrix);        
+        k--;
+    }
+
+    // copy adjacency matrix back to host
+    cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);
+    
+    // print adjacency matrix
+    print_adjacency_matrix(num_nodes, adjacency_matrix);
+
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     print_iter(best, num_nodes);
 
@@ -53,4 +82,8 @@ int main(int argc, char *argv[])
     delete[] node_list;
     delete[] adjacency_matrix;
 
+    cudaFree(d_node_list);
+    cudaFree(d_adjacency_matrix);
+
+    return 0;
 }
