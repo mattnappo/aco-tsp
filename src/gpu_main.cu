@@ -5,8 +5,8 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-#define NUM_ANTS  10000000
-#define NUM_ITER  10
+#define NUM_ANTS  100
+#define NUM_ITER  100
 #define ALPHA     1.0f
 #define BETA      4.0f
 #define RHO       0.5f
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 
     while (k >= 0) {
         // Perform ant tour construction
-        std::cout << "Performing ant tour construction" << std::endl;
+        // std::cout << "Performing ant tour construction" << std::endl;
         tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths, d_visited, d_unvisited_attractiveness, d_neighbors);
 
         cudaDeviceSynchronize(); // Thread barrier
