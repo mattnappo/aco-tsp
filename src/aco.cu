@@ -368,7 +368,7 @@ __global__ void pheromone_update(
         int node     = read_2DI(tours, opt, i,   num_nodes);
         int nextnode = read_2DI(tours, opt, i+1, num_nodes);
 
-        // Do the +=
+        // Do the tau += 1/l
         v = read_2D(tau, node, nextnode, num_nodes);
         write_2D(tau, node, nextnode, num_nodes, v + new_pheromones);
 
