@@ -28,6 +28,16 @@ float read_2D(float *array, int row, int col, int dim2)
     return array[row * dim2 + col];
 }
 
+int read_2DI(int *array, int row, int col, int dim2)
+{
+    return array[row * dim2 + col];
+}
+
+void write_2DI(int *array, int row, int col, int dim2, int value)
+{
+    array[row * dim2 + col] = value;
+}
+
 // make a node list from the x and y coordinates of the cities
 int make_node_list(std::string filename, float *node_list)
 {

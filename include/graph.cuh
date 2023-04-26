@@ -25,6 +25,9 @@
 __host__ __device__ void write_2D(float *array, int row, int col, int dim2, float value);
 __host__ __device__ float read_2D(float *array, int row, int col, int dim2);
 
+__host__ __device__ void write_2DI(int *array, int row, int col, int dim2, int value);
+__host__ __device__ int read_2DI(int *array, int row, int col, int dim2);
+
 int make_node_list(std::string filename, float *node_list);
 void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_matrix);
 
