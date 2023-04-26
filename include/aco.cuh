@@ -40,6 +40,18 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
 
 __global__ void tour_construction(float *adj_mat, float* attractiveness, const int num_nodes, int *d_tours, int num_ants, float* d_tour_lengths, bool* d_visited, float* d_unvisited_attractiveness, int* d_neighbors);
 
-__global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, float *tour_lengths, int num_ants, float rho);
+__global__ void pheromone_update(
+    float *adj_mat,
+    float *attractiveness,
+    float* tau,
+    float alpha,
+    float *eta,
+    float beta,
+    int num_nodes,
+    int *tours,
+    float *tour_lengths,
+    int num_ants,
+    float rho,
+    int *best_path);
 
 #endif

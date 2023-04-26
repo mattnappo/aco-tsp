@@ -80,6 +80,7 @@ int main(int argc, char** argv) {
     bool *d_visited;
     float *d_tour_lengths;
     float *d_unvisited_attractiveness;
+    int *d_best_path; // Final optimal path to be extracted after all iterations
     int *d_neighbors;
 
     // TODO: check return codes of all cuda function calls
@@ -95,6 +96,7 @@ int main(int argc, char** argv) {
     cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(bool));
     cudaMalloc((void**)&d_unvisited_attractiveness, num_nodes * NUM_ANTS * sizeof(float));
     cudaMalloc((void**)&d_neighbors, num_nodes * NUM_ANTS * sizeof(int));
+    cudaMalloc((void**)&d_best_path, num_nodes * sizeof(int));
 
     
     // copy node list and adjacency matrix to device
@@ -112,6 +114,7 @@ int main(int argc, char** argv) {
     cudaMemset(d_visited, 0, num_nodes * NUM_ANTS * sizeof(bool));
     cudaMemset(d_unvisited_attractiveness, 0, num_nodes * NUM_ANTS * sizeof(float));
     cudaMemset(d_neighbors, 0, num_nodes * NUM_ANTS * sizeof(int));
+    cudaMemset(d_best_path, 0, num_nodes * sizeof(int));
 
     // Run ACO tests
     int   m = NUM_ANTS;
@@ -126,7 +129,7 @@ int main(int argc, char** argv) {
     while (k >= 0) {
         // Perform ant tour construction
         // std::cout << "Performing ant tour construction" << std::endl;
-        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths, d_visited, d_unvisited_attractiveness, d_neighbors);
+        tour_construction<<<n_blocks,n_threads>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths, d_visited, d_unvisited_attractiveness, d_neighbors);
 
         cudaDeviceSynchronize(); // Thread barrier
 
@@ -143,22 +146,39 @@ int main(int argc, char** argv) {
            return a value? If the former, does the thread return a pointer to the memory
            it wrote to?
         */
-        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_A, d_tau, a, d_eta, b, num_nodes, d_tours, d_tour_lengths, m, p);
+        pheromone_update<<<1,1>>>(
+                d_adjacency_matrix,
+                d_A,
+                d_tau,
+                a,
+                d_eta,
+                b,
+                num_nodes,
+                d_tours,
+                d_tour_lengths,
+                m,
+                p,
+                d_best_path);
 
         k--;
     }
 
-    // copy adjacency matrix back to host
-    cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);
-
-    // copy adjacency matrix back to host
-    cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);
+    // Copy best path back to host
+    int best_path[num_nodes];
+    cudaMemcpy(best_path, d_best_path, num_nodes * sizeof(int), cudaMemcpyDeviceToHost);
     
     // print adjacency matrix
     // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     //print_iter(best, num_nodes);
+    printf("[ ");
+    for (int i = 0; i < num_nodes; i++) {
+        printf("%d ", best_path[i]);
+    }
+    printf("]\n");
+    float opt_len = calc_path_length(num_nodes, adjacency_matrix, best_path, num_nodes);
+    printf("len = %f\n", opt_len);
 
     // Read optimal path
     std::vector<int> optimal = read_optimal(argv[2]);

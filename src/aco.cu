@@ -39,9 +39,14 @@ __device__ int par_sample(int k, int *ints, float *weights, curandState_t* state
     // cuda random number generator
     float r = curand_uniform(state);
     float sum = 0;
+    float all_weights = 0.0;
+    for(int i = 0; i < k; i++){
+        all_weights += weights[i];
+    }
+
     for(int i = 0; i < k; i++){
         // weights is a 2D array, so we need to index it properly
-        sum += weights[i];
+        sum += weights[i]/all_weights;
         if(r < sum){
             return ints[i];
         }
@@ -319,7 +324,19 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
     
 };
 
-__global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, float *tour_lengths, int num_ants, float rho)
+__global__ void pheromone_update(
+    float *adj_mat,
+    float *attractiveness,
+    float* tau,
+    float alpha,
+    float *eta,
+    float beta,
+    int num_nodes,
+    int *tours,
+    float *tour_lengths,
+    int num_ants,
+    float rho,
+    int *best_path)
 {
     // Do pheromone evaporation
     //tau ij = (1-p) tau ij
@@ -336,7 +353,7 @@ __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* t
     
     // O(n) search through tours_lengths (TODO: I WANT TO DIE WE NEED TO OPTIMIZE THIS. Reduction is ans)
     float min = tour_lengths[0]; // Smallest tour length
-    int opt = 0; // Index of smallest tour length
+    int opt = 0; // Ant-Index of smallest tour length
     for (int i = 1; i < num_ants; i++) {
         if (tour_lengths[i] < min) {
             min = tour_lengths[i];
@@ -345,10 +362,17 @@ __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* t
     }
 
     // Deposit 1/min new pheromones onto each edge of the optimal path
+    // TODO: This part is wrong
     float new_pheromones = 1.0f / min;
-    for (int i = 0; i < num_nodes; i++) {
-        v = read_2DI(tours, opt, i, num_nodes);
-        write_2DI(tours, opt, i, num_nodes, v + new_pheromones);
+    for (int i = 0; i < num_nodes-1; i++) {
+        int node     = read_2DI(tours, opt, i,   num_nodes);
+        int nextnode = read_2DI(tours, opt, i+1, num_nodes);
+
+        // Do the tau += 1/l
+        v = read_2D(tau, node, nextnode, num_nodes);
+        write_2D(tau, node, nextnode, num_nodes, v + new_pheromones);
+
+        best_path[i] = node; // Write output (return)
     }
 
     // Update attractivenesses (A = tau^a * eta^b)
@@ -360,4 +384,5 @@ __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* t
             write_2D(attractiveness, i, j, num_nodes, v);
         }
     }
+
 };

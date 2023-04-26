@@ -123,11 +123,12 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     // if there are no unvisited neighbors, return -1. Otherwise, return the number of unvisited neighbors
 
     int num_unvisited_neighbors = 0;
-    float inf = std::numeric_limits<float>::max();
+    //float inf = std::numeric_limits<float>::max();
     for (int i = 0; i < num_nodes; i++)
     {
         float w = read_2D(adjacency_matrix, node, i, num_nodes);
-        if (w > 0 && w < inf && !visited[i]) 
+        //if (w > 0 && w < inf && !visited[i]) 
+        if (w > 0 && !visited[i]) 
         {
             neighbors[num_unvisited_neighbors] = i;
             num_unvisited_neighbors++;
