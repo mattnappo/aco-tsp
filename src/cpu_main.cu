@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 #include "graph.cuh"
 #include "aco.cuh"
@@ -38,7 +39,13 @@ int main(int argc, char *argv[])
     float a = 1.0f; // alpha
     float b = 4.0f; // beta
     float p = .5; // rho
-    iter_t best = run_aco(adjacency_matrix, num_nodes, m, k, a, b, p);
+    int best_path[num_nodes] = {0};
+    float best_path_length = std::numeric_limits<float>::max();
+    iter_t best = {
+        .path = best_path,
+        .length = best_path_length
+    };
+    run_aco(adjacency_matrix, num_nodes, m, k, a, b, p, &best);
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     print_iter(best, num_nodes);
 

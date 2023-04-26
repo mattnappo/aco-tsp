@@ -5,7 +5,8 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
-
+#include <curand_kernel.h>
+#include <curand.h>
 
 // The output of an iteration
 // Used to keep track of the best path seen so far
@@ -19,7 +20,7 @@ __host__ __device__ void print_iter(iter_t iter, int num_nodes);
 
 
 int sample(int k, int *ints, float *weights);
-__device__ int par_sample(int k, int *ints, float *weights);
+__device__ int par_sample(int k, int *ints, float *weights, curandState_t *state);
 
 // Compute the edge attractiveness matrix given the graph, tau, eta, a, and b.
 // Store the output in `float *A`
@@ -30,14 +31,14 @@ __device__ void par_edge_attractiveness(float *A, float *adjacency_matrix, int n
         float *tau, float *eta, float a, float b);
 
 // Run a single ant, which will update tau and return an iter_t
-iter_t run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A,
-        iter_t iter);
+void run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A,
+        iter_t* iter);
 
 // Run the ant colony optimization algorithm on a graph.
-iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
-        float a, float b, float p);
+void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
+        float a, float b, float p, iter_t *best);
 
-__global__ void tour_construction(float *adj_mat, float* attractiveness, int num_nodes, int *d_tours, int num_ants);
+__global__ void tour_construction(float *adj_mat, float* attractiveness, int num_nodes, int *d_tours, const int num_ants, float *d_tour_lengths);
 
 __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, int num_ants, float rho);
 #endif

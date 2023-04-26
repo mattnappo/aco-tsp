@@ -22,8 +22,8 @@
 
 // TODO: inline read_2D and write_2D, or make them a macro to reduce
 // function overhead since these are extremely frequently called fns
-void write_2D(float *array, int row, int col, int dim2, float value);
-float read_2D(float *array, int row, int col, int dim2);
+__host__ __device__ void write_2D(float *array, int row, int col, int dim2, float value);
+__host__ __device__ float read_2D(float *array, int row, int col, int dim2);
 
 int make_node_list(std::string filename, float *node_list);
 void make_adjacency_matrix(int num_nodes, float *node_list, float *adjacency_matrix);
@@ -32,11 +32,11 @@ void print_node_list(int num_nodes, float *node_list);
 void print_adjacency_matrix(int num_nodes, float *adjacency_matrix);
 void display_matrix(int num_nodes, float *adjacency_matrix, char *name);
 
-void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
-int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
+__host__ __device__ void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
+__host__ __device__ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
 
 // TODO: inline this?
-float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size);
+__host__ __device__ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size);
 
 std::vector<int> read_optimal(std::string filename);
 

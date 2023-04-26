@@ -64,7 +64,7 @@ debug: $(TARGET)
 
 # the valgrind target
 valgrind: $(TARGET)
-	valgrind --leak-check=full ./$(TARGET) ts11.tsp
+	valgrind --leak-check=full ./$(TARGET) data/ts11.tsp sols/ts11.sol
 
 # the cppcheck target
 cppcheck:

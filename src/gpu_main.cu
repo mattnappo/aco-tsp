@@ -31,12 +31,12 @@ int main(int argc, char** argv) {
     float *node_list = new float[num_nodes * 2];
     
     make_node_list(filename, node_list);
-    print_node_list(num_nodes, node_list);
+    // print_node_list(num_nodes, node_list);
 
     // make an adjacency matrix from the node list
     float *adjacency_matrix = new float[num_nodes * num_nodes];
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
-    print_adjacency_matrix(num_nodes, adjacency_matrix);
+    // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     int n = num_nodes * num_nodes;
     float *tau = new float[n];
@@ -89,6 +89,7 @@ int main(int argc, char** argv) {
     cudaMalloc((void**)&d_A, n * sizeof(float));
     cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
     cudaMalloc((void**)&d_tour_lengths, NUM_ANTS * sizeof(float));
+    cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(float))
 
     // copy node list and adjacency matrix to device
     cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);
@@ -103,6 +104,8 @@ int main(int argc, char** argv) {
     cudaMemset(d_tours, 0, num_nodes * NUM_ANTS * sizeof(int));
     cudaMemset(d_tour_lengths, 0, NUM_ANTS * sizeof(float));
     
+
+
     // Run ACO tests
     int   m = NUM_ANTS;
     int   k = NUM_ITER;
@@ -115,7 +118,8 @@ int main(int argc, char** argv) {
 
     while (k >= 0) {
         // Perform ant tour construction
-        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m);
+        std::cout << "Performing ant tour construction" << std::endl;
+        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths);
 
         cudaDeviceSynchronize(); // Thread barrier
 
@@ -144,7 +148,7 @@ int main(int argc, char** argv) {
     cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);
     
     // print adjacency matrix
-    print_adjacency_matrix(num_nodes, adjacency_matrix);
+    // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     //print_iter(best, num_nodes);

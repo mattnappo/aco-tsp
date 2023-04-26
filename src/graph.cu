@@ -133,13 +133,13 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     }
 }
 
-float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size)
+__host__ __device__ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size)
 {
     // calculate the length of a path
     // the length of a path is the sum of the distances between the nodes in the path
 
     if (num_nodes != path_size) {
-        fprintf(stderr, "err in calc_path_len: num_nodes != path_size (this should not happen)\n");
+        // fprintf(stderr, "err in calc_path_len: num_nodes != path_size (this should not happen)\n");
         return -1;
     }
 
