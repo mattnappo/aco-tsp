@@ -39,9 +39,14 @@ __device__ int par_sample(int k, int *ints, float *weights, curandState_t* state
     // cuda random number generator
     float r = curand_uniform(state);
     float sum = 0;
+    float all_weights = 0.0;
+    for(int i = 0; i < k; i++){
+        all_weights += weights[i];
+    }
+
     for(int i = 0; i < k; i++){
         // weights is a 2D array, so we need to index it properly
-        sum += weights[i];
+        sum += weights[i]/all_weights;
         if(r < sum){
             return ints[i];
         }
@@ -359,12 +364,13 @@ __global__ void pheromone_update(
     // Deposit 1/min new pheromones onto each edge of the optimal path
     // TODO: This part is wrong
     float new_pheromones = 1.0f / min;
-    for (int i = 0; i < num_nodes; i++) {
-        int node = read_2DI(tours, opt, i, num_nodes);
+    for (int i = 0; i < num_nodes-1; i++) {
+        int node     = read_2DI(tours, opt, i,   num_nodes);
+        int nextnode = read_2DI(tours, opt, i+1, num_nodes);
 
         // Do the +=
-        v = read_2D(tau, opt, node, num_nodes);
-        write_2D(tau, opt, i, num_nodes, v + new_pheromones);
+        v = read_2D(tau, node, nextnode, num_nodes);
+        write_2D(tau, node, nextnode, num_nodes, v + new_pheromones);
 
         best_path[i] = node; // Write output (return)
     }
