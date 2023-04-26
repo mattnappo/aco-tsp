@@ -53,7 +53,11 @@ int main(int argc, char *argv[])
 
     clock_t end = clock();
     double dt = (double)(end - begin) / CLOCKS_PER_SEC;
+#ifdef USE_OMP
+    printf("ran cpu_omp in %f\n", dt);
+#else
     printf("ran cpu in %f\n", dt);
+#endif
 
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     print_iter(best, num_nodes);

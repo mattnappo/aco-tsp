@@ -219,7 +219,9 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         }
         
         // Run ants
+#ifdef USE_OMP
         #pragma omp parallel for
+#endif
         for (int a = 0; a < m; a++) {
             //printf("main loop (%d, %d)\n", k, a); // crashes at 151, 0
             run_ant(adjacency_matrix, num_nodes, tau, A, best);

@@ -7,7 +7,7 @@ NVCC := nvcc
 
 # the compiler flags
 # CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
-NVCC_FLAGS := -O3   -g -Iinclude -Xcompiler -fopenmp
+NVCC_FLAGS := -O3   -g -Iinclude -Xcompiler -fopenmp 
 NVCC_LIBS := 
 
 # cuda config
@@ -27,13 +27,18 @@ OBJ      := $(patsubst src/%.cu,obj/%.o,$(SRC))
 # the executable file
 TARGET := cpu
 GPU_TARGET := gpu
+OMP_TARGET := cpu_omp
 
 # the default target
-all: $(TARGET) $(GPU_TARGET)
+all: $(TARGET) $(GPU_TARGET) $(OMP_TARGET)
 
 # the executable file depends on the object files
 $(TARGET): $(OBJ) src/cpu_main.cu
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+# the executable file depends on the object files
+$(OMP_TARGET): $(OBJ) src/cpu_main.cu
+	$(NVCC) $(NVCC_FLAGS) -DUSE_OMP -o $@ $^
 
 # the executable file depends on the object files
 $(GPU_TARGET): $(OBJ) src/gpu_main.cu
@@ -52,7 +57,7 @@ obj/%.o: src/%.cu
 
 # the clean target
 clean:
-	rm -f obj/* $(TARGET) $(GPU_TARGET) tests sample_test.txt
+	rm -f obj/* $(TARGET) $(GPU_TARGET) $(OMP_TARGET) tests sample_test.txt
 
 # the run target
 run: $(TARGET)
