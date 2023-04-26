@@ -1,7 +1,8 @@
 #include <iostream>
+#include <cmath>
 #include <cuda.h>
 
-#include "graph.hpp"
+#include "graph.cuh"
 #include "aco.cuh"
 
 #define NUM_ANTS  10000000
@@ -37,12 +38,34 @@ int main(int argc, char** argv) {
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
+    int n = num_nodes * num_nodes;
+    float *tau = new float[n];
+    float *eta = new float[n];
+    float *A   = new float[n];
+
+    // Initialize tau, eta, A
+    float w;
+    for (int i = 0; i < num_nodes; i++) {
+        for (int j = 0; j < num_nodes; j++) {
+            w = read_2D(adjacency_matrix, i, j, num_nodes);
+            if (w != 0) {
+                write_2D(eta, i, j, num_nodes, 1.0/w);
+                write_2D(A, i, j, num_nodes, std::pow(1.0/w, RHO));
+            } else {
+                write_2D(eta, i, j, num_nodes, 0.0);
+                write_2D(A, i, j, num_nodes, 0.0);
+            }
+            write_2D(tau, i, j, num_nodes, 1.0);
+        }
+    }
+
     /* -- kernel wrapper -- */
 
     // device copies of node list and adjacency matrix
     float *d_node_list;
     float *d_adjacency_matrix;
     float *d_tau;
+    float *d_eta;
     float *d_A; // reward matrix A
     /* TODO
        lets think about tours. proposed idea: NxM matrix of ints where
@@ -50,29 +73,35 @@ int main(int argc, char** argv) {
        M = num ants
        Ants (threads) index into this big matrix to report their tour.
        Allows us to easily see all the tours at the end of each iteration
-       Might be slow?
+       Might be slow? -- no
+       this is what we'll do
     */
     int *d_tours;
+    float *d_tour_lengths;
 
     // TODO: check return codes of all cuda function calls
 
     // allocate memory on device
-    int n = num_nodes * num_nodes;
     cudaMalloc((void**)&d_node_list, num_nodes * 2 * sizeof(float)); // TODO I don't htink this needs to be on the GPU
     cudaMalloc((void**)&d_adjacency_matrix, n * sizeof(float));
     cudaMalloc((void**)&d_tau, n * sizeof(float));
+    cudaMalloc((void**)&d_eta, n * sizeof(float));
     cudaMalloc((void**)&d_A, n * sizeof(float));
     cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
+    cudaMalloc((void**)&d_tour_lengths, NUM_ANTS * sizeof(float));
 
     // copy node list and adjacency matrix to device
     cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_adjacency_matrix, adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_eta, eta, n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_tau, tau, n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_A, A, n * sizeof(float), cudaMemcpyHostToDevice);
 
-    cudaMemset(d_tau,   0, n * sizeof(float));
-    cudaMemset(d_A,     0, n * sizeof(float)); // Initially, it is just adj_mat
+    //cudaMemset(d_tau,   0, n * sizeof(float));
+    //cudaMemset(d_eta,   0, n * sizeof(float));
+    //cudaMemset(d_A,     0, n * sizeof(float)); // Initially, it is just adj_mat
     cudaMemset(d_tours, 0, num_nodes * NUM_ANTS * sizeof(int));
-
-    // Initialize tau and A (TODO)
+    cudaMemset(d_tour_lengths, 0, NUM_ANTS * sizeof(float));
     
     // Run ACO tests
     int   m = NUM_ANTS;
@@ -84,9 +113,9 @@ int main(int argc, char** argv) {
     int n_threads = 32; // warp size
     int n_blocks = m / n_threads;
 
-    while(k >= 0) {
+    while (k >= 0) {
         // Perform ant tour construction
-        tour_construction<<<n_blocks, n_threads>>>(d_adjacency_matrix, d_A, num_nodes, a, b, p);
+        tour_construction<<<n_blocks, n_threads>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m);
 
         cudaDeviceSynchronize(); // Thread barrier
 
@@ -103,10 +132,13 @@ int main(int argc, char** argv) {
            return a value? If the former, does the thread return a pointer to the memory
            it wrote to?
         */
-        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_tau, num_nodes, d_tours, a, b, p, m);
+        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_A, d_tau, a, d_eta, b, num_nodes, d_tours, m, p);
 
         k--;
     }
+
+    // copy adjacency matrix back to host
+    cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);
 
     // copy adjacency matrix back to host
     cudaMemcpy(adjacency_matrix, d_adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyDeviceToHost);

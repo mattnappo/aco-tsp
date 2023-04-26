@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "graph.hpp"
+#include "graph.cuh"
 
 void str_split(std::string &str, std::vector<std::string> &out) 
 { 

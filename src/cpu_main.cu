@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "graph.hpp"
-#include "aco.hpp"
+#include "graph.cuh"
+#include "aco.cuh"
 
 // #define SOLVE_FILE "./ts11.sol"
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     // Run ACO tests
-    int   m = 10000; // num ants
+    int   m = 100; // num ants
     int   k = 100; // num iter
     float a = 1.0f; // alpha
     float b = 4.0f; // beta

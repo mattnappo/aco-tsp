@@ -2,12 +2,12 @@
 # the header files are in include/ directory
 # the main program remains in the current directory
 
-CC   := g++
+# CC   := g++
 NVCC := nvcc
 
 # the compiler flags
-CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
-NVCC_FLAGS :=       -g -Iinclude
+# CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
+NVCC_FLAGS :=       -g -Iinclude -Xcompiler -fopenmp
 NVCC_LIBS := 
 
 # cuda config
@@ -17,38 +17,38 @@ CUDA_INC_DIR= -I$(CUDA_ROOT_DIR)/include
 CUDA_LINK_LIBS= -lcudart
 
 # source files in src/ directory
-SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
-CUDA_SRC := $(wildcard src/*.cu)
+SRC := $(filter-out src/tests.cu src/cpu_main.cu src/gpu_main.cu, $(wildcard src/*.cu))
+# CUDA_SRC := $(wildcard src/*.cu)
 
 # object files in obj/ directory
-OBJ      := $(patsubst src/%.cpp,obj/%.o,$(SRC))
-CUDA_OBJ := $(patsubst src/%.cu,obj/%.o,$(CUDA_SRC))
+OBJ      := $(patsubst src/%.cu,obj/%.o,$(SRC))
+# CUDA_OBJ := $(patsubst src/%.cu,obj/%.o,$(CUDA_SRC))
 
 # the executable file
-TARGET := final
+TARGET := cpu
 GPU_TARGET := gpu
 
 # the default target
 all: $(TARGET) $(GPU_TARGET)
 
 # the executable file depends on the object files
-$(TARGET): $(OBJ) src/main.cpp
-	$(CC) $(CFLAGS) -o $@ $^
-
-# the executable file depends on the object files
-$(GPU_TARGET): $(OBJ) $(CUDA_OBJ) src/main.cu
+$(TARGET): $(OBJ) src/cpu_main.cu
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
-tests: $(OBJ) src/tests.cpp
-	$(CC) $(CFLAGS) -o $@ $^
+# the executable file depends on the object files
+$(GPU_TARGET): $(OBJ) src/gpu_main.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+tests: $(OBJ) src/tests.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 # the object files depend on the source files
-obj/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.o: src/%.cu
+	$(NVCC) $(NVCC_FLAGS) -c -o $@ $<
 
 # compile cuda objects
-obj/%.o: src/%.cu include/%.cuh
-	$(NVCC) $(NVCC_FLAGS) -c $< -o $@ $(NVCC_LIBS)
+# obj/%.o: src/%.cu include/%.cuh
+# 	$(NVCC) $(NVCC_FLAGS) -c $< -o $@ $(NVCC_LIBS)
 
 # the clean target
 clean:

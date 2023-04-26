@@ -12,7 +12,7 @@
 #include <sstream>
 #include <limits>
 
-#include "graph.hpp"
+#include "graph.cuh"
 
 // write a value to a 2D array
 void write_2D(float *array, int row, int col, int dim2, float value)
@@ -117,7 +117,7 @@ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, in
     for (int i = 0; i < num_nodes; i++)
     {
         float w = read_2D(adjacency_matrix, node, i, num_nodes);
-        if (w > 0 && w < inf && w > 0 && !visited[i]) 
+        if (w > 0 && w < inf && !visited[i]) 
         {
             neighbors[num_unvisited_neighbors] = i;
             num_unvisited_neighbors++;

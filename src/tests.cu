@@ -2,8 +2,8 @@
 #include <assert.h>
 #include <fstream>
 
-#include "graph.hpp"
-#include "aco.hpp"
+#include "graph.cuh"
+#include "aco.cuh"
 
 void test_sample()
 {

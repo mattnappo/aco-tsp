@@ -3,11 +3,11 @@
 #include <limits>
 #include <random>
 
-#include "aco.hpp"
-#include "graph.hpp"
+#include "aco.cuh"
+#include "graph.cuh"
 
 // Print the iter_t structure
-void print_iter(iter_t iter, int num_nodes)
+__host__ __device__ void print_iter(iter_t iter, int num_nodes)
 {
     printf("iter_t {\n\tpath = [ ");
     for (int i = 0; i < num_nodes; i++) {
@@ -28,6 +28,10 @@ int sample(int k, int *ints, float *weights)
 
     auto sampled_value = points[d(gen)];
     return sampled_value;
+}
+
+__device__ int par_sample(int k, int *ints, float *weights) {
+    return 0;
 }
 
 // Compute the edge attractiveness matrix given the graph, tau, eta, a, and b.
@@ -213,3 +217,11 @@ iter_t run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
 
     return best;
 }
+
+__global__ void tour_construction(float *adj_mat, float* attractiveness, int num_nodes, int *d_tours, int num_ants) {
+
+};
+
+__global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, int num_ants, float rho){
+    
+};
