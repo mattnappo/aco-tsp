@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
            return a value? If the former, does the thread return a pointer to the memory
            it wrote to?
         */
-        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_A, d_tau, a, d_eta, b, num_nodes, d_tours, m, p);
+        pheromone_update<<<1,1>>>(d_adjacency_matrix, d_A, d_tau, a, d_eta, b, num_nodes, d_tours, d_tour_lengths, m, p);
 
         k--;
     }
