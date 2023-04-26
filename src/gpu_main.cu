@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 
     while (k >= 0) {
         // Perform ant tour construction
-        tour_construction<<<n_blocks, n_threads>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m);
+        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m);
 
         cudaDeviceSynchronize(); // Thread barrier
 
