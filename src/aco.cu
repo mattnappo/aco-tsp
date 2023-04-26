@@ -56,6 +56,7 @@ void edge_attractiveness(float *A, float *adjacency_matrix, int num_nodes,
         float *tau, float *eta, float a, float b)
 {
     for (int i = 0; i < num_nodes; i++) {
+        // TODO: could just be normal ij loop
         int neighbors[num_nodes];
         get_neighbors(num_nodes, adjacency_matrix, i, neighbors);
         for (int j = 0; j < num_nodes; j++) {
@@ -316,6 +317,45 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
     
 };
 
-__global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, int num_ants, float rho){
+__global__ void pheromone_update(float *adj_mat, float *attractiveness, float* tau, float alpha, float *eta, float beta, int num_nodes, int *tours, float *tour_lengths, int num_ants, float rho)
+{
+    // Do pheromone evaporation
+    //tau ij = (1-p) tau ij
+    float v;
+    float rho_c = 1.0f - rho;
+    for (int i = 0; i < num_nodes; i++) {
+        for (int j = 0; j < num_nodes; j++) {
+            v = read_2D(tau, i, j, num_nodes);
+            write_2D(tau, i, j, num_nodes, rho_c * v);
+        }
+    }
 
+    // Deposit new pheromones
+    
+    // O(n) search through tours_lengths (TODO: I WANT TO DIE WE NEED TO OPTIMIZE THIS. Reduction is ans)
+    float min = tour_lengths[0]; // Smallest tour length
+    int opt = 0; // Index of smallest tour length
+    for (int i = 1; i < num_ants; i++) {
+        if (tour_lengths[i] < min) {
+            min = tour_lengths[i];
+            opt = i;
+        }
+    }
+
+    // Deposit 1/min new pheromones onto each edge of the optimal path
+    float new_pheromones = 1.0f / min;
+    for (int i = 0; i < num_nodes; i++) {
+        v = read_2Di(tours, opt, i, num_nodes);
+        write_2Di(tours, opt, i, num_nodes, v + new_pheromones);
+    }
+
+    // Update attractivenesses (A = tau^a * eta^b)
+    for (int i = 0; i < num_nodes; i++) {
+        for (int j = 0; j < num_nodes; j++) {
+            float t = read_2D(tau, i, j, num_nodes);
+            float e = read_2D(eta, i, j, num_nodes);
+            v = powf(t, alpha) * powf(e, beta);
+            write_2D(attractiveness, i, j, num_nodes, v);
+        }
+    }
 };
