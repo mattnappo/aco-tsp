@@ -2,5 +2,5 @@
 
 make clean
 make
-./cpu data/ts11.tsp sols/ts11.sol
-./gpu data/ts11.tsp sols/ts11.sol
+time ./cpu data/ts11.tsp sols/ts11.sol
+time ./gpu data/ts11.tsp sols/ts11.sol
