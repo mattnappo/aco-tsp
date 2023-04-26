@@ -2,7 +2,7 @@
 #include <cuda.h>
 
 #include "graph.hpp"
-#include "par_aco.cuh"
+#include "aco.cuh"
 
 #define NUM_ANTS  10000000
 #define NUM_ITER  10
