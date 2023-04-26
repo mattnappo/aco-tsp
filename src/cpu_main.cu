@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <time.h>
 
 #include "graph.cuh"
 #include "aco.cuh"
@@ -34,8 +35,8 @@ int main(int argc, char *argv[])
     print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     // Run ACO tests
-    int   m = 100; // num ants
-    int   k = 100; // num iter
+    int   m = 4096; // num ants
+    int   k = 1000; // num iter
     float a = 1.0f; // alpha
     float b = 4.0f; // beta
     float p = .5; // rho
@@ -45,7 +46,15 @@ int main(int argc, char *argv[])
         .path = best_path,
         .length = best_path_length
     };
+
+    clock_t begin = clock();
+
     run_aco(adjacency_matrix, num_nodes, m, k, a, b, p, &best);
+
+    clock_t end = clock();
+    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("ran cpu in %f\n", dt);
+
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
     print_iter(best, num_nodes);
 

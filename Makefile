@@ -7,7 +7,7 @@ NVCC := nvcc
 
 # the compiler flags
 # CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
-NVCC_FLAGS :=       -g -Iinclude -Xcompiler -fopenmp
+NVCC_FLAGS := -O3   -g -Iinclude -Xcompiler -fopenmp
 NVCC_LIBS := 
 
 # cuda config

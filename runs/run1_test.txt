@@ -1,0 +1,29 @@
+ran cpu in 339.893231
+run with m=4096 k=1000 a=1.000000 b=4.000000 p=0.500000
+iter_t {
+        path = [ 0 8 2 10 3 9 5 7 6 4 1 ]
+         len = 100.758400
+}
+optimal:
+iter_t {
+        path = [ 0 8 1 4 6 7 5 9 2 3 10 ]
+         len = 99.270370
+}
+
+real    0m43.236s
+user    5m39.947s
+sys     0m0.021s
+Number of nodes: 11
+ran gpu in 0.275187
+run with m=4096 k=-1 a=1.000000 b=4.000000 p=0.500000
+[ 0 8 3 2 4 6 5 7 9 10 0 ]
+len = 94.569923
+optimal:
+iter_t {
+        path = [ 0 8 1 4 6 7 5 9 2 3 10 ]
+         len = 99.270370
+}
+
+real    0m0.581s
+user    0m0.442s
+sys     0m0.080s

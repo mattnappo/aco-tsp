@@ -5,8 +5,8 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-#define NUM_ANTS  100
-#define NUM_ITER  100
+#define NUM_ANTS  4096
+#define NUM_ITER  1000
 #define ALPHA     1.0f
 #define BETA      4.0f
 #define RHO       0.5f
@@ -126,6 +126,8 @@ int main(int argc, char** argv) {
     int n_threads = 32; // warp size
     int n_blocks = m / n_threads;
 
+    clock_t begin = clock();
+
     while (k >= 0) {
         // Perform ant tour construction
         // std::cout << "Performing ant tour construction" << std::endl;
@@ -163,6 +165,10 @@ int main(int argc, char** argv) {
         k--;
     }
 
+    clock_t end = clock();
+    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("ran gpu in %f\n", dt);
+
     // Copy best path back to host
     int best_path[num_nodes];
     cudaMemcpy(best_path, d_best_path, num_nodes * sizeof(int), cudaMemcpyDeviceToHost);
@@ -170,7 +176,7 @@ int main(int argc, char** argv) {
     // print adjacency matrix
     // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
-    printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
+    printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,NUM_ITER,a,b,p);
     //print_iter(best, num_nodes);
     printf("[ ");
     for (int i = 0; i < num_nodes; i++) {
