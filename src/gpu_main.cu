@@ -79,6 +79,8 @@ int main(int argc, char** argv) {
     int *d_tours;
     bool *d_visited;
     float *d_tour_lengths;
+    float *d_unvisited_attractiveness;
+    int *d_neighbors;
 
     // TODO: check return codes of all cuda function calls
 
@@ -91,7 +93,10 @@ int main(int argc, char** argv) {
     cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
     cudaMalloc((void**)&d_tour_lengths, NUM_ANTS * sizeof(float));
     cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(bool));
+    cudaMalloc((void**)&d_unvisited_attractiveness, num_nodes * NUM_ANTS * sizeof(float));
+    cudaMalloc((void**)&d_neighbors, num_nodes * NUM_ANTS * sizeof(int));
 
+    
     // copy node list and adjacency matrix to device
     cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(d_adjacency_matrix, adjacency_matrix, num_nodes * num_nodes * sizeof(float), cudaMemcpyHostToDevice);
@@ -104,8 +109,9 @@ int main(int argc, char** argv) {
     //cudaMemset(d_A,     0, n * sizeof(float)); // Initially, it is just adj_mat
     cudaMemset(d_tours, 0, num_nodes * NUM_ANTS * sizeof(int));
     cudaMemset(d_tour_lengths, 0, NUM_ANTS * sizeof(float));
-    
-
+    cudaMemset(d_visited, 0, num_nodes * NUM_ANTS * sizeof(bool));
+    cudaMemset(d_unvisited_attractiveness, 0, num_nodes * NUM_ANTS * sizeof(float));
+    cudaMemset(d_neighbors, 0, num_nodes * NUM_ANTS * sizeof(int));
 
     // Run ACO tests
     int   m = NUM_ANTS;
@@ -120,7 +126,7 @@ int main(int argc, char** argv) {
     while (k >= 0) {
         // Perform ant tour construction
         std::cout << "Performing ant tour construction" << std::endl;
-        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths);
+        tour_construction<<<1,1>>>(d_adjacency_matrix, d_A, num_nodes, d_tours, m, d_tour_lengths, d_visited, d_unvisited_attractiveness, d_neighbors);
 
         cudaDeviceSynchronize(); // Thread barrier
 

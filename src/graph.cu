@@ -186,7 +186,7 @@ void print_adjacency_matrix(int num_nodes, float *adjacency_matrix)
     }
 }
 
-void display_matrix(int num_nodes, float *adjacency_matrix, char *name)
+void display_matrix(int num_nodes, float *adjacency_matrix, const char *name)
 {
     if (name)
         printf("%s:\n", name);

@@ -13,3 +13,5 @@ final
 tests
 sols/concorde
 .nfs*
+gpu
+cpu

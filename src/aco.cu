@@ -40,10 +40,11 @@ __device__ int par_sample(int k, int *ints, float *weights, curandState_t* state
     float r = curand_uniform(state);
     float sum = 0;
     for(int i = 0; i < k; i++){
-            sum += weights[i];     
-            if(r < sum){
-                    return ints[i];
-            }
+        // weights is a 2D array, so we need to index it properly
+        sum += weights[i];
+        if(r < sum){
+            return ints[i];
+        }
     }
     return ints[k-1];
     
@@ -228,91 +229,92 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     // return;
 }
 
-__global__ void tour_construction(float *adj_mat, float* attractiveness, const int num_nodes, int *d_tours, int num_ants, float* d_tour_lengths) {
+__global__ void tour_construction(float *adj_mat, float* attractiveness, const int num_nodes, int *d_tours, int num_ants, float* d_tour_lengths, bool* d_visited, float* d_unvisited_attractiveness, int* d_neighbors) {
     
-    // int ant_index = blockIdx.x * blockDim.x + threadIdx.x;
+    int ant_index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    // curandState_t state;
-    // curand_init(clock64(), 0, 0, &state);
+    curandState_t state;
+    curand_init(clock64(), 0, 0, &state);
 
-    // int path_size = 1;
-    
-    // int path[num_nodes] = {0}; // Start the hamiltonian cycle at node 0
+    int path_size = 1;
 
-    // bool visited[num_nodes] = {0};
+    // Try to visit every node
+    int i;
+    int* neighbors = d_neighbors + ant_index*num_nodes;
+    bool* visited = d_visited + ant_index*num_nodes;
+    int num_unvisited;
+    while (path_size < num_nodes) {
+        i = read_2DI(d_tours, ant_index, path_size - 1, num_nodes); // Last node visited
+        // Get unvisited neighbors of the last node visited
+        num_unvisited = get_unvisited_neighbors(num_nodes, adj_mat,
+            i, neighbors, visited);
+        // If path complete or ant got stuck, return
+        if (num_unvisited == -1) {
+            // write path to d_tours
 
-    // // Try to visit every node
-    // int i;
-    // int neighbors[num_nodes];
-    // int num_unvisited;
-    // while (path_size < num_nodes) {
-    //     i = path[path_size-1]; // Last node visited
-    //     // Get unvisited neighbors of the last node visited
-    //     num_unvisited = get_unvisited_neighbors(num_nodes, adj_mat,
-    //         i, neighbors, visited);
-    //     // If path complete or ant got stuck, return
-    //     if (num_unvisited == -1) {
-    //         // write path to d_tours
-    //         for (int j = 0; j < path_size; j++) {
-    //             d_tours[ant_index*num_nodes + j] = path[j];
-    //         }
-    //         return;
-    //     }
-    //     //printf("unvisited (%d) neighbors of %d: [ ", num_unvisited, i);
-    //     //for (int jj = 0; jj < num_unvisited; jj++) {
-    //     //    printf("%d ", neighbors[jj]);
-    //     //}
-    //     //printf("] ");
+            return;
+        }
+        //printf("unvisited (%d) neighbors of %d: [ ", num_unvisited, i);
+        //for (int jj = 0; jj < num_unvisited; jj++) {
+        //    printf("%d ", neighbors[jj]);
+        //}
+        //printf("] ");
 
-    //     // Collect the attractivenesses of the unvisited neighbors
-    //     float as[num_unvisited];
-    //     for (int j = 0; j < num_unvisited; j++) {
-    //         as[j] = read_2D(attractiveness, i, j, num_unvisited);
-    //     }
-    //     //printf("[ ");
-    //     //for (int jj = 0; jj < num_unvisited; jj++) {
-    //     //    printf("%f ", as[jj]);
-    //     //}
-    //     //printf("]\n");
+        // Collect the attractivenesses of the unvisited neighbors
+        // float as[num_unvisited];
+        float* current_attractiveness = d_unvisited_attractiveness + ant_index*num_nodes;
+        for (int j = 0; j < num_unvisited; j++) {
+            // as[j] = read_2D(attractiveness, i, neighbors[j], num_nodes);
+            current_attractiveness[j] = read_2D(attractiveness, i, neighbors[j], num_nodes);
+        }
+        //printf("[ ");
+        //for (int jj = 0; jj < num_unvisited; jj++) {
+        //    printf("%f ", as[jj]);
+        //}
+        //printf("]\n");
 
-    //     // Sample the distribution
-    //     int choice = sample(num_unvisited, neighbors, as);
-    //     //printf("picked %d\n", choice);
-    //     int next_node = choice;
-    //     path[path_size++] = next_node;
+        // Sample the distribution
+        int choice = par_sample(num_unvisited, neighbors, current_attractiveness, &state);
+        //printf("picked %d\n", choice);
+        int next_node = choice;
+        // path[path_size++] = next_node;
+        write_2DI(d_tours, ant_index, path_size++, num_nodes, next_node);
+        
+        
+        // Mark as visited
+        visited[i] = true;
+        // write_2D(d_visited, ant_index, i, num_nodes, true);
+        // printf("\n");
+    }
+    // now pathsize = numnodes = 11
 
-    //     // Mark as visited
-    //     visited[i] = true;
-    //     // printf("\n");
-    // }
-    // // now pathsize = numnodes = 11
+    /*
+    printf("visited:\n");
+    for (int j = 0; j < num_nodes; j++) {
+        printf("%d ", visited[j] ? 1 : 0);
+    }
+    printf("\n");
+    printf("ant walked:\n");
+    for (int j = 0; j < num_nodes; j++) {
+        printf("%d ", path[j]);
+    }
+    printf("\n");
+    */
 
-    // /*
-    // printf("visited:\n");
-    // for (int j = 0; j < num_nodes; j++) {
-    //     printf("%d ", visited[j] ? 1 : 0);
-    // }
-    // printf("\n");
-    // printf("ant walked:\n");
-    // for (int j = 0; j < num_nodes; j++) {
-    //     printf("%d ", path[j]);
-    // }
-    // printf("\n");
-    // */
-
-    // // Compute path length (path distance) by summing edge weights along the path
-    // //printf("path size: %d\n", path_size);
-    // //display_matrix(num_nodes, adjacency_matrix, "adj mat");
+    // Compute path length (path distance) by summing edge weights along the path
+    //printf("path size: %d\n", path_size);
+    //display_matrix(num_nodes, adjacency_matrix, "adj mat");
     // printf("path: [ ");
     // for (int jj = 0; jj < path_size; jj++) {
     //    printf("%d ", path[jj]);
     // }
     // printf("]\n");
-    // float path_length = calc_path_length(num_nodes, adj_mat, path, path_size);
+    int* path = d_tours + ant_index*num_nodes;
+    float path_length = calc_path_length(num_nodes, adj_mat, path, path_size);
 
-    // // update d_tour_length with path_length on ant_index
+    // update d_tour_length with path_length on ant_index
     
-    // d_tour_lengths[ant_index] = path_length;
+    d_tour_lengths[ant_index] = path_length;
 
     
 };
