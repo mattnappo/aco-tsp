@@ -345,8 +345,8 @@ __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* t
     // Deposit 1/min new pheromones onto each edge of the optimal path
     float new_pheromones = 1.0f / min;
     for (int i = 0; i < num_nodes; i++) {
-        v = read_2Di(tours, opt, i, num_nodes);
-        write_2Di(tours, opt, i, num_nodes, v + new_pheromones);
+        v = read_2DI(tours, opt, i, num_nodes);
+        write_2DI(tours, opt, i, num_nodes, v + new_pheromones);
     }
 
     // Update attractivenesses (A = tau^a * eta^b)

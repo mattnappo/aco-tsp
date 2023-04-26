@@ -77,6 +77,7 @@ int main(int argc, char** argv) {
        this is what we'll do
     */
     int *d_tours;
+    bool *d_visited;
     float *d_tour_lengths;
 
     // TODO: check return codes of all cuda function calls
@@ -89,7 +90,7 @@ int main(int argc, char** argv) {
     cudaMalloc((void**)&d_A, n * sizeof(float));
     cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
     cudaMalloc((void**)&d_tour_lengths, NUM_ANTS * sizeof(float));
-    cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(float))
+    cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(bool));
 
     // copy node list and adjacency matrix to device
     cudaMemcpy(d_node_list, node_list, num_nodes * 2 * sizeof(float), cudaMemcpyHostToDevice);

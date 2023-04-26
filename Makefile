@@ -44,7 +44,7 @@ tests: $(OBJ) src/tests.cu
 
 # the object files depend on the source files
 obj/%.o: src/%.cu
-	$(NVCC) $(NVCC_FLAGS) -c -o $@ $<
+	$(NVCC) $(NVCC_FLAGS) -dc -o $@ $<
 
 # compile cuda objects
 # obj/%.o: src/%.cu include/%.cuh
