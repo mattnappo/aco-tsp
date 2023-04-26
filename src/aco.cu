@@ -35,13 +35,13 @@ int sample(int k, int *ints, float *weights)
     return sampled_value;
 }
 
-__device__ int par_sample(int k, int *ints, float *weights, curandState_t* state, int ant_index, int num_nodes){
+__device__ int par_sample(int k, int *ints, float *weights, curandState_t* state){
     // cuda random number generator
     float r = curand_uniform(state);
     float sum = 0;
     for(int i = 0; i < k; i++){
         // weights is a 2D array, so we need to index it properly
-        sum += weights[ant_index*num_nodes + i];
+        sum += weights[i];
         if(r < sum){
             return ints[i];
         }
@@ -229,7 +229,7 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
     // return;
 }
 
-__global__ void tour_construction(float *adj_mat, float* attractiveness, const int num_nodes, int *d_tours, int num_ants, float* d_tour_lengths, bool* d_visited, d_unvisited_attractiveness, d_neighbors) {
+__global__ void tour_construction(float *adj_mat, float* attractiveness, const int num_nodes, int *d_tours, int num_ants, float* d_tour_lengths, bool* d_visited, float* d_unvisited_attractiveness, int* d_neighbors) {
     
     int ant_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -241,6 +241,7 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
     // Try to visit every node
     int i;
     int* neighbors = d_neighbors + ant_index*num_nodes;
+    bool* visited = d_visited + ant_index*num_nodes;
     int num_unvisited;
     while (path_size < num_nodes) {
         i = read_2DI(d_tours, ant_index, path_size - 1, num_nodes); // Last node visited
@@ -261,10 +262,10 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
 
         // Collect the attractivenesses of the unvisited neighbors
         // float as[num_unvisited];
-        float current_attractiveness;
+        float* current_attractiveness = d_unvisited_attractiveness + ant_index*num_nodes;
         for (int j = 0; j < num_unvisited; j++) {
-            current_attractiveness = read_2D(attractiveness, i, j, num_nodes);
-            write_2D(d_unvisited_attractiveness, ant_index, j, num_nodes, current_attractiveness);
+            // as[j] = read_2D(attractiveness, i, neighbors[j], num_nodes);
+            current_attractiveness[j] = read_2D(attractiveness, i, neighbors[j], num_nodes);
         }
         //printf("[ ");
         //for (int jj = 0; jj < num_unvisited; jj++) {
@@ -273,16 +274,16 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
         //printf("]\n");
 
         // Sample the distribution
-        int choice = par_sample(num_unvisited, neighbors, *current_attractiveness, &state, ant_index, num_nodes);
+        int choice = par_sample(num_unvisited, neighbors, current_attractiveness, &state);
         //printf("picked %d\n", choice);
         int next_node = choice;
         // path[path_size++] = next_node;
-        write_2D(d_tours, ant_index, path_size++, num_nodes, next_node);
+        write_2DI(d_tours, ant_index, path_size++, num_nodes, next_node);
         
         
         // Mark as visited
-        // visited[i] = true;
-        write_2D(d_visited, ant_index, i, num_nodes, true);
+        visited[i] = true;
+        // write_2D(d_visited, ant_index, i, num_nodes, true);
         // printf("\n");
     }
     // now pathsize = numnodes = 11
@@ -303,11 +304,12 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
     // Compute path length (path distance) by summing edge weights along the path
     //printf("path size: %d\n", path_size);
     //display_matrix(num_nodes, adjacency_matrix, "adj mat");
-    printf("path: [ ");
-    for (int jj = 0; jj < path_size; jj++) {
-       printf("%d ", path[jj]);
-    }
-    printf("]\n");
+    // printf("path: [ ");
+    // for (int jj = 0; jj < path_size; jj++) {
+    //    printf("%d ", path[jj]);
+    // }
+    // printf("]\n");
+    int* path = d_tours + ant_index*num_nodes;
     float path_length = calc_path_length(num_nodes, adj_mat, path, path_size);
 
     // update d_tour_length with path_length on ant_index
@@ -345,8 +347,8 @@ __global__ void pheromone_update(float *adj_mat, float *attractiveness, float* t
     // Deposit 1/min new pheromones onto each edge of the optimal path
     float new_pheromones = 1.0f / min;
     for (int i = 0; i < num_nodes; i++) {
-        v = read_2Di(tours, opt, i, num_nodes);
-        write_2Di(tours, opt, i, num_nodes, v + new_pheromones);
+        v = read_2DI(tours, opt, i, num_nodes);
+        write_2DI(tours, opt, i, num_nodes, v + new_pheromones);
     }
 
     // Update attractivenesses (A = tau^a * eta^b)
