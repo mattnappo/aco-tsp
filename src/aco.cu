@@ -334,7 +334,7 @@ __global__ void tour_construction(float *adj_mat, float* attractiveness, const i
     d_tour_lengths[ant_index] = path_length;
 
     
-};
+}
 
 __global__ void pheromone_update(
     float *adj_mat,
@@ -396,5 +396,5 @@ __global__ void pheromone_update(
             write_2D(attractiveness, i, j, num_nodes, v);
         }
     }
+}
 
-};

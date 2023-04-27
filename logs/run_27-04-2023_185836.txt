@@ -1,0 +1,432 @@
+./cpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.050172
+0.086159
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.049916
+0.063279
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.049646
+0.065722
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.098573
+0.043554
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.098474
+0.06166
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.09886
+0.027096
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.196239
+0.050474
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.197038
+0.034422
+
+./cpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.196581
+0.016003
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.19373
+2.299879
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.192866
+2.295571
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.193994
+2.368977
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.387076
+2.216401
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.386507
+2.05313
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.387473
+2.278039
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.771763
+2.08656
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.772165
+2.214475
+
+./cpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.772872
+2.096067
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001175
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001208
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001174
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001373
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001414
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001362
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.001804
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.001757
+3.4028234663852886e+38
+
+./cpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.001756
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.021661
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.024248
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.022676
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.02258
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.02256
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.023228
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.024044
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.024346
+3.4028234663852886e+38
+
+./cpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.024285
+3.4028234663852886e+38
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.011451
+0.046655
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.012453
+0.08281
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.011481
+0.050641
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.027386
+0.057205
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.02308
+0.073269
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.027647
+0.049164
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.047071
+0.039332
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.049869
+0.027096
+
+./cpu_omp ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.045674
+0.01499
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.051123
+2.42535
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.044454
+2.000215
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.045069
+2.455791
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.086796
+2.135232
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.095312
+2.231137
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.096128
+2.240843
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.171297
+2.085287
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.16867
+2.232856
+
+./cpu_omp ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.167596
+2.205469
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001328
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001346
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.001362
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001595
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001403
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.001391
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.0018
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.001588
+3.4028234663852886e+38
+
+./cpu_omp ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.001487
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.020527
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.020744
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+0.020698
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.020734
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.020659
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+0.020761
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.020336
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.021164
+3.4028234663852886e+38
+
+./cpu_omp ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+0.020881
+3.4028234663852886e+38
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.113993
+0.410134
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.076033
+0.099856
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 1024 1 0.5 0.2 0.7 false
+0.093463
+0.04078
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.075068
+0.059581
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.07604
+0.124221
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 2048 1 0.5 0.2 0.7 false
+0.076295
+0.186582
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.075972
+0.384202
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.076605
+0.098632
+
+./gpu ./data/ts11.tsp ./sols/ts11.sol 4096 1 0.5 0.2 0.7 false
+0.091577
+0.3433
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.081414
+1.312425
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.075722
+1.432105
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 1024 1 0.5 0.2 0.7 false
+0.075857
+1.892454
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.07494
+1.605937
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.092597
+1.793824
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 2048 1 0.5 0.2 0.7 false
+0.076087
+1.547035
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.092826
+1.828576
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.072535
+1.717676
+
+./gpu ./data/dj38.tsp ./sols/dj38.sol 4096 1 0.5 0.2 0.7 false
+0.076069
+1.559615
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.199838
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.181744
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 1024 1 0.5 0.2 0.7 false
+0.163489
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.160901
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.176064
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 2048 1 0.5 0.2 0.7 false
+0.176557
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.175842
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.177245
+1.0
+
+./gpu ./data/qa194.tsp ./sols/qa194.sol 4096 1 0.5 0.2 0.7 false
+0.174496
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+2.338112
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+2.338868
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 1024 1 0.5 0.2 0.7 false
+2.342852
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+2.339929
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+2.335657
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 2048 1 0.5 0.2 0.7 false
+2.345534
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+2.332753
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+2.340708
+1.0
+
+./gpu ./data/zi929.tsp ./sols/zi929.sol 4096 1 0.5 0.2 0.7 false
+2.346761
+1.0
+
