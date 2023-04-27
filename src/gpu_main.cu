@@ -6,7 +6,7 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-//#include "config.cuh"
+#include "config.cuh"
 
 int main(int argc, char** argv) {
 

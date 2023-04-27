@@ -9,15 +9,10 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-//#include "config.cuh"
+#include "config.cuh"
 
 int main(int argc, char *argv[])
 {
-#ifdef USE_OMP
-    printf("using OpenMP\n");
-#else
-    printf("not using OpenMP\n");
-#endif
     if (argc != 3)
     {
         std::cout << "Usage: " << argv[0] << " <filename> <solution.sol>" << std::endl;
