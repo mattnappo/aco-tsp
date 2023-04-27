@@ -2,13 +2,24 @@
 #include <limits>
 #include <time.h>
 
+#ifdef USE_OMP
+#include <omp.h>
+#endif
+
 #include "graph.cuh"
 #include "aco.cuh"
+
+#include "config.cuh"
 
 // #define SOLVE_FILE "./ts11.sol"
 
 int main(int argc, char *argv[])
 {
+#ifdef USE_OMP
+    printf("using OpenMP with %d threads\n", omp_get_num_threads());
+#else
+    printf("not using OpenMP\n");
+#endif
     if (argc != 3)
     {
         std::cout << "Usage: " << argv[0] << " <filename> <solution.sol>" << std::endl;
@@ -27,19 +38,19 @@ int main(int argc, char *argv[])
     float *node_list = new float[num_nodes * 2];
     
     make_node_list(filename, node_list);
-    print_node_list(num_nodes, node_list);
+    //print_node_list(num_nodes, node_list);
 
     // make an adjacency matrix from the node list
     float *adjacency_matrix = new float[num_nodes * num_nodes];
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
-    print_adjacency_matrix(num_nodes, adjacency_matrix);
+    //print_adjacency_matrix(num_nodes, adjacency_matrix);
 
     // Run ACO tests
-    int   m = 4096; // num ants
-    int   k = 1000; // num iter
-    float a = 1.0f; // alpha
-    float b = 4.0f; // beta
-    float p = .5; // rho
+    int   m = NUM_ANTS;
+    int   k = NUM_ITER;
+    float a = ALPHA;
+    float b = BETA;
+    float p = RHO;
     int best_path[num_nodes] = {0};
     float best_path_length = std::numeric_limits<float>::max();
     iter_t best = {

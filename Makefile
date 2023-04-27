@@ -38,7 +38,7 @@ $(TARGET): $(OBJ) src/cpu_main.cu
 
 # the executable file depends on the object files
 $(OMP_TARGET): $(OBJ) src/cpu_main.cu
-	$(NVCC) $(NVCC_FLAGS) -DUSE_OMP -o $@ $^
+	$(NVCC) $(NVCC_FLAGS) -Xcompiler -DUSE_OMP -o $@ $^
 
 # the executable file depends on the object files
 $(GPU_TARGET): $(OBJ) src/gpu_main.cu
@@ -58,6 +58,10 @@ obj/%.o: src/%.cu
 # the clean target
 clean:
 	rm -f obj/* $(TARGET) $(GPU_TARGET) $(OMP_TARGET) tests sample_test.txt
+
+reset:
+	make clean
+	make
 
 # the run target
 run: $(TARGET)

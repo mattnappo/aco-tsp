@@ -5,11 +5,7 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-#define NUM_ANTS  4096
-#define NUM_ITER  1000
-#define ALPHA     1.0f
-#define BETA      4.0f
-#define RHO       0.5f
+#include "config.h"
 
 int main(int argc, char** argv) {
 
@@ -37,6 +33,9 @@ int main(int argc, char** argv) {
     float *adjacency_matrix = new float[num_nodes * num_nodes];
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     // print_adjacency_matrix(num_nodes, adjacency_matrix);
+
+
+    clock_t begin = clock();
 
     int n = num_nodes * num_nodes;
     float *tau = new float[n];
@@ -126,7 +125,6 @@ int main(int argc, char** argv) {
     int n_threads = 32; // warp size
     int n_blocks = m / n_threads;
 
-    clock_t begin = clock();
 
     while (k >= 0) {
         // Perform ant tour construction
@@ -165,13 +163,14 @@ int main(int argc, char** argv) {
         k--;
     }
 
-    clock_t end = clock();
-    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("ran gpu in %f\n", dt);
 
     // Copy best path back to host
     int best_path[num_nodes];
     cudaMemcpy(best_path, d_best_path, num_nodes * sizeof(int), cudaMemcpyDeviceToHost);
+
+    clock_t end = clock();
+    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("ran gpu in %f\n", dt);
     
     // print adjacency matrix
     // print_adjacency_matrix(num_nodes, adjacency_matrix);

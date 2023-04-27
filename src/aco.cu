@@ -76,6 +76,7 @@ void edge_attractiveness(float *A, float *adjacency_matrix, int num_nodes,
 }
 
 // Run a single ant, which will update tau
+// TODO: compare these two impls
 void run_ant(float *adjacency_matrix, int num_nodes, float *tau, float *A, iter_t* iter)
 {
     // Initialize the ant's path
@@ -195,9 +196,9 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         }
     }
 
-    display_matrix(num_nodes, adjacency_matrix, "matrix start");
-    display_matrix(num_nodes, tau, "tau start");
-    display_matrix(num_nodes, eta, "eta start");
+    //display_matrix(num_nodes, adjacency_matrix, "matrix start");
+    //display_matrix(num_nodes, tau, "tau start");
+    //display_matrix(num_nodes, eta, "eta start");
 
     float v;
     float *A = new float[n];
@@ -207,6 +208,7 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
 
     // Main iteration loop (k-loop)
     for (int k = 0; k < k_max; k++) {
+        //printf("k = %d/%d\n", k, k_max);
         // Compute reward matrix
         edge_attractiveness(A, adjacency_matrix, num_nodes, tau, eta, a, b);
         
@@ -227,7 +229,7 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
             run_ant(adjacency_matrix, num_nodes, tau, A, best);
         }
     }
-    display_matrix(num_nodes, tau, "final tau");
+    //display_matrix(num_nodes, tau, "final tau");
 
     delete[] tau;
     delete[] eta;
