@@ -16,7 +16,6 @@ typedef struct ITER_T {
 // Print the iter_t structure
 __host__ __device__ void print_iter(iter_t iter, int num_nodes);
 
-
 int sample(int k, int *ints, float *weights);
 __device__ int par_sample(int k, int *ints, float *weights, curandState_t *state);
 

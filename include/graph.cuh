@@ -41,6 +41,23 @@ __host__ __device__ int get_unvisited_neighbors(int num_nodes, float *adjacency_
 // TODO: inline this?
 __host__ __device__ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size);
 
+/* config.cu */
+
+struct aco_config {
+    std::string filename;
+    std::string solution;
+    int num_nodes;
+    int num_ants;
+    int num_iter;
+    float alpha;
+    float beta;
+    float rho;
+
+    bool debug;
+};
+
 std::vector<int> read_optimal(std::string filename);
+int parse_args(int argc, char **argv, struct aco_config *config);
+float p_error(float true_val, float obs_val);
 
 #endif

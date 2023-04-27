@@ -6,43 +6,32 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-#include "config.cuh"
-
-int main(int argc, char** argv) {
-
-    if (argc != 3)
-    {
-        std::cout << "Usage: " << argv[0] << " <filename> <solution.sol>" << std::endl;
+int main(int argc, char** argv)
+{
+    struct aco_config config;
+    if (parse_args(argc, argv, &config)) {
         return 1;
     }
+    int num_nodes = config.num_nodes;
+    int         m = config.num_ants;
+    int         k = config.num_iter;
+    float       a = config.alpha;
+    float       b = config.beta;
+    float       p = config.rho;
 
-    std::string filename = argv[1];
-
-    // parse the filename to get the number of nodes 
-    int num_nodes = std::stoi(filename.substr(7, filename.find(".tsp") - 2));
-    // filename = "data/" + filename;
-
-    std::cout << "Number of nodes: " << num_nodes << std::endl;
-
-    struct timeval tval_before, tval_after, tval_result;
-    gettimeofday(&tval_before, NULL);
-
-    // make a node list from the x and y coordinates of the cities
+    // Make node list and adj mat
     float *node_list = new float[num_nodes * 2];
-    
-    make_node_list(filename, node_list);
-    // print_node_list(num_nodes, node_list);
-
-    // make an adjacency matrix from the node list
+    make_node_list(config.filename, node_list);
     float *adjacency_matrix = new float[num_nodes * num_nodes];
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
-    // print_adjacency_matrix(num_nodes, adjacency_matrix);
-
 
     int n = num_nodes * num_nodes;
     float *tau = new float[n];
     float *eta = new float[n];
     float *A   = new float[n];
+
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
 
     // Initialize tau, eta, A
     float w;
@@ -51,7 +40,7 @@ int main(int argc, char** argv) {
             w = read_2D(adjacency_matrix, i, j, num_nodes);
             if (w != 0) {
                 write_2D(eta, i, j, num_nodes, 1.0/w);
-                write_2D(A, i, j, num_nodes, std::pow(1.0/w, RHO));
+                write_2D(A, i, j, num_nodes, std::pow(1.0/w, p));
             } else {
                 write_2D(eta, i, j, num_nodes, 0.0);
                 write_2D(A, i, j, num_nodes, 0.0);
@@ -92,11 +81,11 @@ int main(int argc, char** argv) {
     cudaMalloc((void**)&d_tau, n * sizeof(float));
     cudaMalloc((void**)&d_eta, n * sizeof(float));
     cudaMalloc((void**)&d_A, n * sizeof(float));
-    cudaMalloc((void**)&d_tours, num_nodes * NUM_ANTS * sizeof(int));
-    cudaMalloc((void**)&d_tour_lengths, NUM_ANTS * sizeof(float));
-    cudaMalloc((void**)&d_visited, num_nodes * NUM_ANTS * sizeof(bool));
-    cudaMalloc((void**)&d_unvisited_attractiveness, num_nodes * NUM_ANTS * sizeof(float));
-    cudaMalloc((void**)&d_neighbors, num_nodes * NUM_ANTS * sizeof(int));
+    cudaMalloc((void**)&d_tours, num_nodes * m * sizeof(int));
+    cudaMalloc((void**)&d_tour_lengths, m * sizeof(float));
+    cudaMalloc((void**)&d_visited, num_nodes * m * sizeof(bool));
+    cudaMalloc((void**)&d_unvisited_attractiveness, num_nodes * m * sizeof(float));
+    cudaMalloc((void**)&d_neighbors, num_nodes * m * sizeof(int));
     cudaMalloc((void**)&d_best_path, num_nodes * sizeof(int));
 
     
@@ -110,19 +99,14 @@ int main(int argc, char** argv) {
     //cudaMemset(d_tau,   0, n * sizeof(float));
     //cudaMemset(d_eta,   0, n * sizeof(float));
     //cudaMemset(d_A,     0, n * sizeof(float)); // Initially, it is just adj_mat
-    cudaMemset(d_tours, 0, num_nodes * NUM_ANTS * sizeof(int));
-    cudaMemset(d_tour_lengths, 0, NUM_ANTS * sizeof(float));
-    cudaMemset(d_visited, 0, num_nodes * NUM_ANTS * sizeof(bool));
-    cudaMemset(d_unvisited_attractiveness, 0, num_nodes * NUM_ANTS * sizeof(float));
-    cudaMemset(d_neighbors, 0, num_nodes * NUM_ANTS * sizeof(int));
+    cudaMemset(d_tours, 0, num_nodes * m * sizeof(int));
+    cudaMemset(d_tour_lengths, 0, m * sizeof(float));
+    cudaMemset(d_visited, 0, num_nodes * m * sizeof(bool));
+    cudaMemset(d_unvisited_attractiveness, 0, num_nodes * m * sizeof(float));
+    cudaMemset(d_neighbors, 0, num_nodes * m * sizeof(int));
     cudaMemset(d_best_path, 0, num_nodes * sizeof(int));
 
     // Run ACO tests
-    int   m = NUM_ANTS;
-    int   k = NUM_ITER;
-    float a = ALPHA;
-    float b = BETA;
-    float p = RHO;
 
     int n_threads = 32; // warp size
     int n_blocks = m / n_threads;
@@ -172,31 +156,37 @@ int main(int argc, char** argv) {
 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("ran gpu in: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
-    
-    // print adjacency matrix
-    // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
-    printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,NUM_ITER,a,b,p);
-    //print_iter(best, num_nodes);
-    printf("[ ");
-    for (int i = 0; i < num_nodes; i++) {
-        printf("%d ", best_path[i]);
-    }
-    printf("]\n");
-    float opt_len = calc_path_length(num_nodes, adjacency_matrix, best_path, num_nodes);
-    printf("len = %f\n", opt_len);
+    float best_len = calc_path_length(num_nodes, adjacency_matrix, best_path, num_nodes);
 
     // Read optimal path
-    std::vector<int> optimal = read_optimal(argv[2]);
+    std::vector<int> optimal = read_optimal(config.solution);
     int *optimal_path = &optimal[0];
     float optimal_length = calc_path_length(num_nodes, adjacency_matrix, optimal_path, optimal.size());
 
-    printf("optimal: \n");
-    print_iter((iter_t) { optimal_path, optimal_length }, num_nodes);
+    printf("%s run with m=%d k=%d a=%f b=%f p=%f\n",argv[0],m,config.num_iter,a,b,p);
+    printf("time: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+    printf("error: %f\n", p_error(optimal_length, best_len));
+    
+    if (config.debug) {
+        printf("[ ");
+        for (int i = 0; i < num_nodes; i++) {
+            printf("%d ", best_path[i]);
+        }
+        printf("]\n");
+        printf("len = %f\n", best_len);
 
+        printf("optimal: \n");
+        print_iter((iter_t) { optimal_path, optimal_length }, num_nodes);
+    }
+    
+    // Cleanup
     delete[] node_list;
     delete[] adjacency_matrix;
+
+    delete[] tau;
+    delete[] eta;
+    delete[] A;
 
     cudaFree(d_node_list);
     cudaFree(d_adjacency_matrix);
