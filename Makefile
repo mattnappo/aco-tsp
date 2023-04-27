@@ -22,6 +22,7 @@ SRC := $(filter-out src/tests.cu src/cpu_main.cu src/gpu_main.cu, $(wildcard src
 
 # object files in obj/ directory
 OBJ      := $(patsubst src/%.cu,obj/%.o,$(SRC))
+OMP_OBJ  := $(patsubst src/%.cu,obj/%.omp.o,$(SRC))
 # CUDA_OBJ := $(patsubst src/%.cu,obj/%.o,$(CUDA_SRC))
 
 # the executable file
@@ -37,7 +38,7 @@ $(TARGET): $(OBJ) src/cpu_main.cu
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 # the executable file depends on the object files
-$(OMP_TARGET): $(OBJ) src/cpu_main.cu
+$(OMP_TARGET): $(OMP_OBJ) src/cpu_main.cu
 	$(NVCC) $(NVCC_FLAGS) -Xcompiler -DUSE_OMP -o $@ $^
 
 # the executable file depends on the object files
@@ -50,6 +51,11 @@ tests: $(OBJ) src/tests.cu
 # the object files depend on the source files
 obj/%.o: src/%.cu
 	$(NVCC) $(NVCC_FLAGS) -dc -o $@ $<
+
+# object files for OpenMP
+# the object files depend on the source files
+obj/%.omp.o: src/%.cu
+	$(NVCC) $(NVCC_FLAGS) -DUSE_OMP -dc -o $@ $^
 
 # compile cuda objects
 # obj/%.o: src/%.cu include/%.cuh

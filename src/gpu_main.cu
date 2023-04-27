@@ -1,11 +1,12 @@
 #include <iostream>
 #include <cmath>
 #include <cuda.h>
+#include <sys/time.h>
 
 #include "graph.cuh"
 #include "aco.cuh"
 
-#include "config.h"
+//#include "config.cuh"
 
 int main(int argc, char** argv) {
 
@@ -23,6 +24,9 @@ int main(int argc, char** argv) {
 
     std::cout << "Number of nodes: " << num_nodes << std::endl;
 
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
+
     // make a node list from the x and y coordinates of the cities
     float *node_list = new float[num_nodes * 2];
     
@@ -34,8 +38,6 @@ int main(int argc, char** argv) {
     make_adjacency_matrix(num_nodes, node_list, adjacency_matrix);
     // print_adjacency_matrix(num_nodes, adjacency_matrix);
 
-
-    clock_t begin = clock();
 
     int n = num_nodes * num_nodes;
     float *tau = new float[n];
@@ -168,9 +170,9 @@ int main(int argc, char** argv) {
     int best_path[num_nodes];
     cudaMemcpy(best_path, d_best_path, num_nodes * sizeof(int), cudaMemcpyDeviceToHost);
 
-    clock_t end = clock();
-    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("ran gpu in %f\n", dt);
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("ran gpu in: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
     
     // print adjacency matrix
     // print_adjacency_matrix(num_nodes, adjacency_matrix);

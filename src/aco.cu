@@ -7,6 +7,9 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#ifdef USE_OMP
+#include <omp.h>
+#endif
 
 #include "aco.cuh"
 #include "graph.cuh"
@@ -223,11 +226,16 @@ void run_aco(float *adjacency_matrix, int num_nodes, int m, int k_max,
         // Run ants
 #ifdef USE_OMP
         #pragma omp parallel for
-#endif
+        for (int a = 0; a < m; a++) {
+            //printf("using OpenMP with %d threads\n", omp_get_num_threads());
+            run_ant(adjacency_matrix, num_nodes, tau, A, best);
+        }
+#else
         for (int a = 0; a < m; a++) {
             //printf("main loop (%d, %d)\n", k, a); // crashes at 151, 0
             run_ant(adjacency_matrix, num_nodes, tau, A, best);
         }
+#endif
     }
     //display_matrix(num_nodes, tau, "final tau");
 

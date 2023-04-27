@@ -1,6 +1,6 @@
 #include <iostream>
 #include <limits>
-#include <time.h>
+#include <sys/time.h>
 
 #ifdef USE_OMP
 #include <omp.h>
@@ -9,14 +9,12 @@
 #include "graph.cuh"
 #include "aco.cuh"
 
-#include "config.cuh"
-
-// #define SOLVE_FILE "./ts11.sol"
+//#include "config.cuh"
 
 int main(int argc, char *argv[])
 {
 #ifdef USE_OMP
-    printf("using OpenMP with %d threads\n", omp_get_num_threads());
+    printf("using OpenMP\n");
 #else
     printf("not using OpenMP\n");
 #endif
@@ -58,16 +56,18 @@ int main(int argc, char *argv[])
         .length = best_path_length
     };
 
-    clock_t begin = clock();
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
 
     run_aco(adjacency_matrix, num_nodes, m, k, a, b, p, &best);
 
-    clock_t end = clock();
-    double dt = (double)(end - begin) / CLOCKS_PER_SEC;
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
 #ifdef USE_OMP
-    printf("ran cpu_omp in %f\n", dt);
+    printf("ran cpu_omp in: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 #else
-    printf("ran cpu in %f\n", dt);
+    printf("ran cpu in: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 #endif
 
     printf("run with m=%d k=%d a=%f b=%f p=%f\n",m,k,a,b,p);
