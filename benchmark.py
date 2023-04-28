@@ -7,12 +7,12 @@ from collections import defaultdict
 # Configuration
 OMP_NUM_THREADS = 16
 NUM_TRIALS      = 3
-NUM_ITERS       = 100
+NUM_ITERS       = 650
 ALPHA           = 0.5
-BETA            = 0.2
-RHO             = 0.7
+BETA            = 0.3
+RHO             = 0.6
 DEBUG           = False
-datasets        = ["ts11", "dj38", "qa194"]
+datasets        = ["ts11", "dj38", "qa194", "uy734"]
 colonies        = [512, 1024, 2048]
 binaries        = ["./cpu", "./cpu_omp", "./gpu"]
 
