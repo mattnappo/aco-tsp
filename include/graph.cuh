@@ -1,11 +1,13 @@
 /**
  * @file graph.hpp
  * @brief Graph class definition
- * @details This file contains the definition of the Graph class meant for Traveling Salesman Problem on a Euclidean Grid
- * 
+ * @details This file contains the definition of the Graph class meant for Traveling
+ * Salesman Problem on a Euclidean Grid
+ *
  * @author  Aayush Poudel
- * 
-*/
+ * @author  Matt Nappo
+ *
+ */
 
 #ifndef __GRAPH_HPP__
 #define __GRAPH_HPP__
@@ -35,25 +37,26 @@ void print_node_list(int num_nodes, float *node_list);
 void print_adjacency_matrix(int num_nodes, float *adjacency_matrix);
 void display_matrix(int num_nodes, float *adjacency_matrix, const char *name);
 
-__host__ __device__ void get_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors);
-__host__ __device__ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix, int node, int *neighbors, bool *visited);
+__host__ __device__ void get_neighbors(int num_nodes, float *adjacency_matrix, int node,
+                                       int *neighbors);
+__host__ __device__ int get_unvisited_neighbors(int num_nodes, float *adjacency_matrix,
+                                                int node, int *neighbors, bool *visited);
 
 // TODO: inline this?
-__host__ __device__ float calc_path_length(int num_nodes, float *adjacency_matrix, int *path, int path_size);
-
-/* config.cu */
+__host__ __device__ float calc_path_length(int num_nodes, float *adjacency_matrix,
+                                           int *path, int path_size);
 
 struct aco_config {
-    std::string filename;
-    std::string solution;
-    int num_nodes;
-    int num_ants;
-    int num_iter;
-    float alpha;
-    float beta;
-    float rho;
+  std::string filename;
+  std::string solution;
+  int num_nodes;
+  int num_ants;
+  int num_iter;
+  float alpha;
+  float beta;
+  float rho;
 
-    bool debug;
+  bool debug;
 };
 
 std::vector<int> read_optimal(std::string filename);

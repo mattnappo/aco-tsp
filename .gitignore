@@ -13,3 +13,4 @@ sols/concorde
 gpu
 cpu
 logs/
+obj/*.o
