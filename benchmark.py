@@ -7,13 +7,12 @@ from collections import defaultdict
 # Configuration
 OMP_NUM_THREADS = 16
 NUM_TRIALS      = 3
-NUM_ITERS       = 1000
+NUM_ITERS       = 100
 ALPHA           = 0.5
 BETA            = 0.2
 RHO             = 0.7
 DEBUG           = False
-datasets        = ["ts11", "dj38", "qa194", "zi929"]
-#colonies        = [1024, 2048, 4096]
+datasets        = ["ts11", "dj38", "qa194"]
 colonies        = [512, 1024, 2048]
 binaries        = ["./cpu", "./cpu_omp", "./gpu"]
 
@@ -50,7 +49,7 @@ for command in commands:
 input("Press enter to run above commands")
 
 # Build
-system("make clean && make")
+#system("make clean && make")
 
 # Run the commands and parse outputs
 outputs = defaultdict(list)
@@ -103,7 +102,6 @@ for binary in binaries:
 
     time_tables.append(time_table)
     error_tables.append(error_table)
-    
 
 def pprint(matrix):
     s = [[str(e) for e in row] for row in matrix]
