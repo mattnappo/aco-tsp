@@ -22,6 +22,14 @@ GPU:
    - [ ] Benchmark the CPU impl
    - [ ] Benchmark the real GPU impl
 
+Now:
+- [-] Implement ACO for TSP on the GPU, using parallelism
+- [ ] Benchmark
+   - [ ] Benchmark the CPU impl
+   - [ ] Benchmark the real GPU impl
+- [ ] Compare correctness (how are we going to do this? answer: comparing path lengths)
+- [ ] Search the project for `TODO` since I added some potential stuff
+
 Known problems
 * CPU
   * Invalid reads on paths in `iter_t`s
