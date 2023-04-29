@@ -1,38 +1,73 @@
 # the source files are in src/ directory
 # the header files are in include/ directory
 # the main program remains in the current directory
-# the compiler
-CC := g++
+
+# CC   := g++
+NVCC := nvcc
 
 # the compiler flags
-CFLAGS := -Wall -g -Iinclude -fopenmp -O3
+# CFLAGS     := -Wall -g -Iinclude -O3 # -fopenmp 
+NVCC_FLAGS := -O3   -g -Iinclude -Xcompiler -fopenmp 
+NVCC_LIBS := 
+
+# cuda config
+CUDA_ROOT_DIR=/usr/local/cuda-12.0
+CUDA_LIB_DIR= -L$(CUDA_ROOT_DIR)/lib64
+CUDA_INC_DIR= -I$(CUDA_ROOT_DIR)/include
+CUDA_LINK_LIBS= -lcudart
 
 # source files in src/ directory
-SRC := $(filter-out src/tests.cpp src/main.cpp, $(wildcard src/*.cpp))
+SRC := $(filter-out src/tests.cu src/cpu_main.cu src/gpu_main.cu, $(wildcard src/*.cu))
+# CUDA_SRC := $(wildcard src/*.cu)
 
 # object files in obj/ directory
-OBJ := $(patsubst src/%.cpp,obj/%.o,$(SRC))
+OBJ      := $(patsubst src/%.cu,obj/%.o,$(SRC))
+OMP_OBJ  := $(patsubst src/%.cu,obj/%.omp.o,$(SRC))
+# CUDA_OBJ := $(patsubst src/%.cu,obj/%.o,$(CUDA_SRC))
 
 # the executable file
-TARGET := final
+TARGET := cpu
+GPU_TARGET := gpu
+OMP_TARGET := cpu_omp
 
 # the default target
-all: $(TARGET)
+all: $(TARGET) $(GPU_TARGET) $(OMP_TARGET)
 
 # the executable file depends on the object files
-$(TARGET): $(OBJ) src/main.cpp
-	$(CC) $(CFLAGS) -o $@ $^
+$(TARGET): $(OBJ) src/cpu_main.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
-tests: $(OBJ) src/tests.cpp
-	$(CC) $(CFLAGS) -o $@ $^
+# the executable file depends on the object files
+$(OMP_TARGET): $(OMP_OBJ) src/cpu_main.cu
+	$(NVCC) $(NVCC_FLAGS) -Xcompiler -DUSE_OMP -o $@ $^
+
+# the executable file depends on the object files
+$(GPU_TARGET): $(OBJ) src/gpu_main.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+tests: $(OBJ) src/tests.cu
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 # the object files depend on the source files
-obj/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.o: src/%.cu
+	$(NVCC) $(NVCC_FLAGS) -dc -o $@ $<
+
+# object files for OpenMP
+# the object files depend on the source files
+obj/%.omp.o: src/%.cu
+	$(NVCC) $(NVCC_FLAGS) -DUSE_OMP -dc -o $@ $^
+
+# compile cuda objects
+# obj/%.o: src/%.cu include/%.cuh
+# 	$(NVCC) $(NVCC_FLAGS) -c $< -o $@ $(NVCC_LIBS)
 
 # the clean target
 clean:
-	rm -f $(OBJ) $(TARGET) tests sample_test.txt
+	rm -f obj/* $(TARGET) $(GPU_TARGET) $(OMP_TARGET) tests sample_test.txt
+
+reset:
+	make clean
+	make
 
 # the run target
 run: $(TARGET)
@@ -44,7 +79,7 @@ debug: $(TARGET)
 
 # the valgrind target
 valgrind: $(TARGET)
-	valgrind --leak-check=full ./$(TARGET) ts11.tsp
+	valgrind --leak-check=full ./$(TARGET) data/ts11.tsp sols/ts11.sol
 
 # the cppcheck target
 cppcheck:

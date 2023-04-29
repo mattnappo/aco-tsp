@@ -12,6 +12,16 @@ Matt
 - [X] Implement ACO for TSP on the CPU, sequentially
 - [X] Write tests
 
+GPU:
+- [X] GPU Initialization / kernel wrapper
+- [ ] Write Kernels
+   - [ ] Tour construction
+   - [ ] Parallel pheromone update
+- [ ] Write GPU-safe sampling function
+- [ ] Benchmark
+   - [ ] Benchmark the CPU impl
+   - [ ] Benchmark the real GPU impl
+
 Now:
 - [-] Implement ACO for TSP on the GPU, using parallelism
 - [ ] Benchmark
@@ -25,3 +35,5 @@ Known problems
   * Invalid reads on paths in `iter_t`s
   * Not reaching optimal on dj38 and above
   * Freeing heap alloc arrays with `delete[]` causes `path` in `iter_t` to be null
+* Search the project for `TODO` since I added some potential stuff
+

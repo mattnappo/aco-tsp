@@ -5,10 +5,12 @@
 *.ptx
 *.cubin
 *.fatbin
-data/*
-!data/ts10.tsp
-!data/ts11.tsp
 sample_test.txt
 final
 tests
 sols/concorde
+.nfs*
+gpu
+cpu
+logs/
+obj/*.o
