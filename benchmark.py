@@ -69,8 +69,8 @@ for i, command in enumerate(commands):
     # Backup / write to log
     log.write(f"{str_cmd}\n{run[0]}\n{run[1]}\n\n")
     log.flush()
-
-    print(f"Ran {i}/{n_cmds}")
+    print(out)
+    print(f"Ran {i}/{n_cmds}\n")
 log.close()
 
 # Prepare outputs for pretty printing to align with excel sheet
